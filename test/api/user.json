@@ -1,0 +1,29 @@
+{
+  "links": {
+    "self": "api/users.json"
+  },
+  "data": [
+    {
+      "type": "User",
+      "id": "e81fea3d-6379-4137-8068-7d70a90a1a7c",
+      "attributes": {
+        "email": "james@example.com"
+      },
+      "relationships": {
+        "profile": {
+          "links": {
+            "related": "api/users/e81fea3d-6379-4137-8068-7d70a90a1a7c/profile.json"
+          }
+        },
+        "group": {
+          "links": {
+            "related": "api/users/e81fea3d-6379-4137-8068-7d70a90a1a7c/group.json"
+          }
+        }
+      },
+      "links": {
+        "self": "api/users/e81fea3d-6379-4137-8068-7d70a90a1a7c.json"
+      }
+    }
+  ]
+}

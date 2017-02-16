@@ -1,0 +1,70 @@
+{
+  "links": {
+    "self": "api/articles/017bc4b9-014c-4873-bbda-12c4f5475740.json?include=user.profile,user.group"
+  },
+  "data": {
+    "type": "Article",
+    "id": "017bc4b9-014c-4873-bbda-12c4f5475740",
+    "attributes": {
+      "title": "What's up today?",
+      "content": "Nothing much..."
+    },
+    "relationships": {
+      "author": {
+        "links": {
+          "related": "api/articles/017bc4b9-014c-4873-bbda-12c4f5475740/authors.json"
+        },
+        "data": {
+          "id": "e81fea3d-6379-4137-8068-7d70a90a1a7c",
+          "type": "User"
+        }
+      }
+    },
+    "links": {
+      "self": "api/articles/017bc4b9-014c-4873-bbda-12c4f5475740.json"
+    }
+  },
+  "included": [
+    {
+      "type": "User",
+      "id": "e81fea3d-6379-4137-8068-7d70a90a1a7c",
+      "attributes": {
+        "email": "james@example.com"
+      },
+      "relationships": {
+        "profile": {
+          "links": {
+            "related": "api/users/e81fea3d-6379-4137-8068-7d70a90a1a7c/profile.json"
+          },
+          "data": {
+            "id": "fa4ea433-5786-46c3-ab63-079fec1c488a",
+            "type": "UserProfile"
+          }
+        },
+        "group": {
+          "links": {
+            "related": "api/users/fa4ea433-5786-46c3-ab63-079fec1c488a/group.json"
+          },
+          "data": {
+            "id": "2ff03213-3990-41da-ba8c-1999b1e96f7a",
+            "type": "UserGroup"
+          }
+        }
+      }
+    },
+    {
+      "type": "UserProfile",
+      "id": "fa4ea433-5786-46c3-ab63-079fec1c488a",
+      "attributes": {
+        "firstname": "James",
+        "lastname": "Bond"
+      }
+    }, {
+      "type": "UserGroup",
+      "id": "2ff03213-3990-41da-ba8c-1999b1e96f7a",
+      "attributes": {
+        "name": "Spies"
+      }
+    }
+  ]
+}

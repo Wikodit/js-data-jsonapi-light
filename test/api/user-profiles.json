@@ -1,0 +1,38 @@
+{
+  "links": {
+    "self": "api/user-profiles.json?include=user"
+  },
+  "data": [
+    {
+      "type": "UserProfile",
+      "id": "fa4ea433-5786-46c3-ab63-079fec1c488a",
+      "attributes": {
+        "firstname": "James",
+        "lastname": "Bond"
+      },
+      "relationships": {
+        "user": {
+          "links": {
+            "related": "api/user-profiles/fa4ea433-5786-46c3-ab63-079fec1c488a/user.json"
+          },
+          "data": {
+            "id": "e81fea3d-6379-4137-8068-7d70a90a1a7c",
+            "type": "User"
+          }
+        }
+      },
+      "links": {
+        "self": "api/user-profiles/fa4ea433-5786-46c3-ab63-079fec1c488a.json"
+      }
+    }
+  ],
+  "included": [
+    {
+      "type": "User",
+      "id": "e81fea3d-6379-4137-8068-7d70a90a1a7c",
+      "attributes": {
+        "email": "james@example.com"
+      }
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "lib": ["es2015", "dom"],
+    "outDir": "dist",
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "removeComments": true,
+    "preserveConstEnums": true
+  },
+  "typeRoots": [
+    "node_modules/@types",
+    "typings"
+  ],
+  "types": [
+    "typings/karma.d.ts"
+  ],
+  "include": [
+    "src/**/*.ts"
+  ]
+}

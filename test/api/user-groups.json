@@ -1,0 +1,78 @@
+{
+  "links": {
+    "self": "api/user-groups.json?include=users"
+  },
+  "data": [
+    {
+      "type": "UserGroup",
+      "id": "2ff03213-3990-41da-ba8c-1999b1e96f7a",
+      "attributes": {
+        "name": "Spies"
+      },
+      "relationships": {
+        "users": {
+          "links": {
+            "related": "api/user-groups/2ff03213-3990-41da-ba8c-1999b1e96f7a/users.json"
+          },
+          "data": [{
+            "id": "e81fea3d-6379-4137-8068-7d70a90a1a7c",
+            "type": "User"
+          },{
+            "id": "e44fa5d7-0aff-4cc6-a21b-ef29c4b2a7c3",
+            "type": "User"
+          },{
+            "id": "48aef75e-779b-45b0-8c18-e3ebe887c00d",
+            "type": "User"
+          }]
+        }
+      },
+      "links": {
+        "self": "api/user-groups/2ff03213-3990-41da-ba8c-1999b1e96f7a.json"
+      }
+    },
+    {
+      "type": "UserGroup",
+      "id": "594fcc3b-c2aa-47cc-b024-fa019ec0943a",
+      "attributes": {
+        "name": "French People"
+      },
+      "relationships": {
+        "users": {
+          "links": {
+            "related": "api/user-groups/594fcc3b-c2aa-47cc-b024-fa019ec0943a/users.json"
+          },
+          "data": [{
+            "id": "48aef75e-779b-45b0-8c18-e3ebe887c00d",
+            "type": "User"
+          }]
+        }
+      },
+      "links": {
+        "self": "api/user-groups/594fcc3b-c2aa-47cc-b024-fa019ec0943a.json"
+      }
+    }
+  ],
+  "included": [
+    {
+      "type": "User",
+      "id": "e81fea3d-6379-4137-8068-7d70a90a1a7c",
+      "attributes": {
+        "email": "james@example.com"
+      }
+    },
+    {
+      "type": "User",
+      "id": "48aef75e-779b-45b0-8c18-e3ebe887c00d",
+      "attributes": {
+        "email": "pierre@example.com"
+      }
+    },
+    {
+      "type": "User",
+      "id": "e44fa5d7-0aff-4cc6-a21b-ef29c4b2a7c3",
+      "attributes": {
+        "email": "alice@example.com"
+      }
+    }
+  ]
+}
