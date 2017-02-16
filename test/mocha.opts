@@ -1,4 +1,0 @@
---timeout 10s
---reporter nyan
---require ts-node/register
-./test/bootstrap.ts

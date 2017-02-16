@@ -6,6 +6,7 @@ module.exports = function (config) {
     basePath: '',
     frameworks: ['mocha', 'chai', 'sinon'],
     files: [
+      'node_modules/es6-promise/dist/es6-promise.auto.js',
       'node_modules/js-data/dist/js-data.js',
       'node_modules/js-data-http/dist/js-data-http.js',
       'dist/js-data-jsonapi-light.js',
@@ -18,7 +19,8 @@ module.exports = function (config) {
     exclude: [
     ],
     preprocessors: {
-      'test/**/*.ts': ['webpack', 'sourcemap']
+      'test/**/*.ts': ['webpack', 'sourcemap'],
+      'dist/js-data-jsonapi-light.js': ['coverage']
     },
     webpack: {
       module: {
@@ -33,14 +35,18 @@ module.exports = function (config) {
       resolve: webpackConfig.resolve,
       devtool: "inline-source-map"
     },
-    reporters: ['progress'],
+    coverageReporter: {
+      type: 'lcov',
+      dir: 'coverage/'
+    },
+    reporters: ['dots', 'coverage'],
     port: 9876,
     colors: true,
-    logLevel: config.LOG_DEBUG,
+    logLevel: config.LOG_INFO,
     autoWatch: true,
     browsers: ['PhantomJS'],
-    singleRun: false,
+    singleRun: process.env.NODE_ENV !== 'development',
     concurrency: Infinity,
-    client: { captureConsole: true }
+    client: { captureConsole: process.env.NODE_ENV === 'development' }
   })
 }

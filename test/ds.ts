@@ -1,10 +1,7 @@
+/// <reference path="../typings/karma.d.ts" />
+
 declare var JSData:any;
 declare var JSDataJsonApiLight:any;
-
-import * as Promise from 'bluebird';
-window.Promise = Promise
-
-JSData.DSUtils.Promise = Promise;
 
 const jsonApiAdapter = new JSDataJsonApiLight.DSJsonApiLightAdapter({
   suffix: '.json',

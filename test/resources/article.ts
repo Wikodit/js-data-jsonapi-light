@@ -1,5 +1,5 @@
 import * as JSData from 'js-data'
-import { DS } from '../run'
+import { DS } from '../ds'
 
 export const Article:JSData.DSResourceDefinition<any>  = DS.defineResource({
   name: 'Article',
