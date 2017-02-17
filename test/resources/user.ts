@@ -15,6 +15,10 @@ export const User:JSData.DSResourceDefinition<any> = DS.defineResource({
       'Article': {
         localField: 'articles',
         foreignKey: 'authorId'
+      },
+      'UserFavorite': {
+        localField: 'favorites',
+        foreignKey: 'articleId'
       }
     },
     belongsTo: {

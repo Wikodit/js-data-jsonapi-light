@@ -10,6 +10,12 @@ export const Article:JSData.DSResourceDefinition<any>  = DS.defineResource({
         localField: 'author',
         localKey: 'authorId'
       }
+    },
+    haMany: {
+      'UserFavorite': {
+        localField: 'followers',
+        foreignKey: 'articleId'
+      }
     }
   }
 })

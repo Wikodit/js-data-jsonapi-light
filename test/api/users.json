@@ -1,0 +1,62 @@
+{
+  "links": {
+    "self": "api/users.json?include=favorites"
+  },
+  "data": [
+    {
+      "type": "User",
+      "id": "e81fea3d-6379-4137-8068-7d70a90a1a7c",
+      "attributes": {
+        "email": "james@example.com"
+      },
+      "relationships": {
+        "profile": {
+          "links": {
+            "related": "api/users/e81fea3d-6379-4137-8068-7d70a90a1a7c/profile.json"
+          }
+        },
+        "group": {
+          "links": {
+            "related": "api/users/e81fea3d-6379-4137-8068-7d70a90a1a7c/group.json"
+          }
+        },
+        "favorites": {
+          "links": {
+            "related": "api/users/e81fea3d-6379-4137-8068-7d70a90a1a7c/favorites.json"
+          },
+          "data": [
+            {
+              "type": "Article",
+              "id": "017bc4b9-014c-4873-bbda-12c4f5475740"
+            },
+            {
+              "type": "Article",
+              "id": "c9998237-bd57-4eb5-b5de-943250b852c2"
+            }
+          ]
+        }
+      },
+      "links": {
+        "self": "api/users/e81fea3d-6379-4137-8068-7d70a90a1a7c.json"
+      }
+    }
+  ],
+  "included": [
+    {
+      "type": "Article",
+      "id": "017bc4b9-014c-4873-bbda-12c4f5475740",
+      "attributes": {
+        "title": "What's up today?",
+        "content": "Nothing much..."
+      }
+    },
+    {
+      "type": "Article",
+      "id": "c9998237-bd57-4eb5-b5de-943250b852c2",
+      "attributes": {
+        "title": "This is yestarday",
+        "content": "Still nothing..."
+      }
+    }
+  ]
+}
