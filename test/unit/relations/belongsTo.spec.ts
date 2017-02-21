@@ -1,7 +1,8 @@
 import { User, UserProfile } from '../../resources'
 import { expect } from 'chai';
+import { store } from '../../ds';
 
-describe('belongsTo', () => {
+describe('relations/belongsTo', () => {
   describe('when resources are fetched with including their belongsTo => hasOne relation', () => {
     const
       PROFILE_LENGTH = 1,
@@ -46,7 +47,7 @@ describe('belongsTo', () => {
     })
 
     it('should have injected the child in its own datastore', () => {
-      let users:Array<any> = User.getAll();
+      let users:Array<any> = store.getAll('User');
       expect(users).to.have.lengthOf(1);
       expect(users[0].id).to.equal(USER.ID);
       expect(users[0].email).to.equal(USER.EMAIL);

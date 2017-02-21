@@ -1,14 +1,33 @@
-import JSData = require('js-data');
-import DSHttpAdapter = require('js-data-http');
+/// <reference path="./main.d.ts" />
 
-const DSUtils:any = JSData.DSUtils;
+import { utils, DataStore, Mapper } from 'js-data';
+import { HttpAdapter } from 'js-data-http';
+import { Adapter } from 'js-data-adapter';
 
-export class DSJsonApiLightAdapter extends DSHttpAdapter implements JSData.IDSAdapter {
-  adapter: JSData.IDSAdapter;
+// export class JSDataOverride {
+//   addToCache (name:any, result:any, options?:any) {
+    
+//   }
+
+//   mapperWrap (data:any, options?:any) {
+//     console.log('MapperWrap options', options)
+//     return data
+//   }
+// }
+
+export class JsonApiAdapter extends HttpAdapter{
+  adapter: Adapter;
+  private store: DataStore;
 
   constructor(options?:any) {
-    if (!options) {
-      options = {};
+    options = utils.deepMixIn({
+      // Enable the possibility to retrieve more informations in the promise of
+      // a response.
+      // compositePromiseResponse: false
+    }, options || {})
+
+    if (!options.store) {
+      throw new Error('JsonApiAdapter needs to be given a store option.')
     }
 
     if (options.serialize) {
@@ -36,6 +55,7 @@ export class DSJsonApiLightAdapter extends DSHttpAdapter implements JSData.IDSAd
     super(options);
 
     selfWrapper.self = this;
+    this.store = options.store;
   }
 
   private warn(...args:any[]) {
@@ -43,18 +63,20 @@ export class DSJsonApiLightAdapter extends DSHttpAdapter implements JSData.IDSAd
     return;
   }
   
-  public jsonApiSerialize(resourceConfig:any, res:any){
+  public jsonApiSerialize(resourceConfig:Mapper, data:any){
     // console.log('Serialize: ', resourceConfig, res);
     
-    return res.data;
+    console.log(data)
+
+    return data;
   }
   
-  public jsonApiDeserialize(resourceConfig:any, res:any){
+  public jsonApiDeserialize(mapper:Mapper, res:any, options:any){
     // console.log('Deserialize: ', resourceConfig, res);
     
     if (!res.data || !res.data.data) return;
 
-    const collectionReceived = DSUtils.isArray(res.data.data)
+    const collectionReceived = utils.isArray(res.data.data)
 
     // We store all possible items stores in the response in a Object[type][id]
     // structure
@@ -79,7 +101,7 @@ export class DSJsonApiLightAdapter extends DSHttpAdapter implements JSData.IDSAd
     // Know we will check every possible relationships and try to affect them
     // the correct key/id
     for (let type in itemsIndexed) {
-      let resource = resourceConfig.getResource(type);
+      let resource:any = this.store.getMapper(type);
       if (!resource) { this.warn(`Can\'t find resource '${type}'`); continue; }
 
       // Just cache a pointer to relations for the Resource
@@ -107,7 +129,7 @@ export class DSJsonApiLightAdapter extends DSHttpAdapter implements JSData.IDSAd
 
           if (relation.type === 'belongsTo' || relation.type === 'hasOne') {
             let link:any = item.relationships[relationField].data
-            if (!DSUtils.isObject(link)) {
+            if (!utils.isObject(link)) {
               this.warn('Wrong relation somewhere, object expected');
               continue;
             }
@@ -118,7 +140,7 @@ export class DSJsonApiLightAdapter extends DSHttpAdapter implements JSData.IDSAd
             }
           } else if (relation.type === 'hasMany') {
             let links:any = item.relationships[relationField].data
-            if (!DSUtils.isArray(links)) {
+            if (!utils.isArray(links)) {
               this.warn('Wrong relation somewhere, array expected');
               continue;
             }
@@ -141,7 +163,6 @@ export class DSJsonApiLightAdapter extends DSHttpAdapter implements JSData.IDSAd
       return res.data.data.attributes;
     }
 
-
     let outputDatas:Array<any> = [];
     for (let i = 0, l = res.data.data.length; i < l; i++) {
       outputDatas.push(res.data.data[i].attributes);
@@ -150,4 +171,30 @@ export class DSJsonApiLightAdapter extends DSHttpAdapter implements JSData.IDSAd
     // console.log(outputDatas);
     return outputDatas;
   }
+
+  // public HTTP(options?: any): JSData.JSDataPromise<JSData.DSHttpAdapterPromiseResolveType> {
+  //   let compositeResponse = (<any>this.defaults).compositePromiseResponse;
+  //   if(options.compositePromiseResponse !== undefined)
+  //     compositeResponse = options.compositePromiseResponse;
+
+  //   return super.HTTP(options).then((response: any) => {
+  //     return response;
+  //   }).catch((err: any) => {
+  //     return <any>Promise.reject(err);
+  //   })
+  // }
+
+  // private handleError(config: JSData.DSResourceDefinition<any>, options: JSData.DSConfiguration, error:any) {
+  //   return error;
+  // }
+
+  // public findAll(config: JSData.DSResourceDefinition<any>, params?: JSData.DSFilterArg, options?: JSData.DSConfiguration): JSData.JSDataPromise<any> {
+  //   return super.findAll(config, params, options).catch(
+  //     (error: any) => {
+  //       return Promise.reject(this.handleError(config, options, error));
+  //     }
+  //   ).then((data:any) => {
+  //     return Promise.resolve({data:data, meta: 'lol'})
+  //   });
+  // }
 }

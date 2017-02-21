@@ -1,0 +1,10 @@
+{
+  "name": "js-data-jsonapi-light",
+  "version": false,
+  "main": "./typings/main.d.ts",
+  "ambientDependencies": {
+    "js-data": "npm:js-data",
+    "js-data-http-adapter": "npm:js-data-http-adapter",
+    "js-data-adapter": "npm:js-data-adapter"
+  }
+}

@@ -2,6 +2,10 @@
   "links": {
     "self": "api/users.json?include=favorites"
   },
+  "meta": {
+    "about": { "copyright": "Copyright 2017 Wikodit" },
+    "count": 50
+  },
   "data": [
     {
       "type": "User",

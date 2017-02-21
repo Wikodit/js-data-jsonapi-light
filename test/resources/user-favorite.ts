@@ -1,8 +1,7 @@
 import * as JSData from 'js-data'
-import { DS } from '../ds'
+import { store } from '../ds'
 
-export const User:JSData.DSResourceDefinition<any> = DS.defineResource({
-  name: 'UserFavorite',
+export const UserFavorite = store.defineMapper('UserFavorite', {
   relations: {
     hasMany: {
       'Article': {

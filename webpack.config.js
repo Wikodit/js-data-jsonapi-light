@@ -16,10 +16,10 @@ module.exports = {
       root: 'JSData'
     },
     'js-data-http': {
-        amd: 'js-data-http',
-        commonjs: 'js-data-http',
-        commonjs2: 'js-data-http',
-        root: 'DSHttpAdapter'
+      amd: 'js-data-http',
+      commonjs: 'js-data-http',
+      commonjs2: 'js-data-http',
+      root: 'JSDataHttp'
     }
   },
   devtool: "source-map",
