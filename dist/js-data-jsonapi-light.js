@@ -6,8 +6,8 @@
 	else if(typeof exports === 'object')
 		exports["JSDataJsonApiLight"] = factory(require("js-data"), require("js-data-http"));
 	else
-		root["JSDataJsonApiLight"] = factory(root["JSData"], root["DSHttpAdapter"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_0__, __WEBPACK_EXTERNAL_MODULE_1__) {
+		root["JSDataJsonApiLight"] = factory(root["JSData"], root["JSDataHttp"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_1__, __WEBPACK_EXTERNAL_MODULE_2__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -73,23 +73,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_0__;
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
-
-/***/ }),
-/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -99,15 +87,15 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var JSData = __webpack_require__(0);
-var DSHttpAdapter = __webpack_require__(1);
-var DSUtils = JSData.DSUtils;
-var DSJsonApiLightAdapter = (function (_super) {
-    __extends(DSJsonApiLightAdapter, _super);
-    function DSJsonApiLightAdapter(options) {
+var js_data_1 = __webpack_require__(1);
+var js_data_http_1 = __webpack_require__(2);
+var JsonApiAdapter = (function (_super) {
+    __extends(JsonApiAdapter, _super);
+    function JsonApiAdapter(options) {
         var _this = this;
-        if (!options) {
-            options = {};
+        options = js_data_1.utils.deepMixIn({}, options || {});
+        if (!options.store) {
+            throw new Error('JsonApiAdapter needs to be given a store option.');
         }
         if (options.serialize) {
             options.beforeSerialize = options.serialize;
@@ -128,9 +116,10 @@ var DSJsonApiLightAdapter = (function (_super) {
         }(selfWrapper);
         _this = _super.call(this, options) || this;
         selfWrapper.self = _this;
+        _this.store = options.store;
         return _this;
     }
-    DSJsonApiLightAdapter.prototype.warn = function () {
+    JsonApiAdapter.prototype.warn = function () {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
@@ -138,13 +127,14 @@ var DSJsonApiLightAdapter = (function (_super) {
         console.warn.apply(null, arguments);
         return;
     };
-    DSJsonApiLightAdapter.prototype.jsonApiSerialize = function (resourceConfig, res) {
-        return res.data;
+    JsonApiAdapter.prototype.jsonApiSerialize = function (resourceConfig, data) {
+        console.log(data);
+        return data;
     };
-    DSJsonApiLightAdapter.prototype.jsonApiDeserialize = function (resourceConfig, res) {
+    JsonApiAdapter.prototype.jsonApiDeserialize = function (mapper, res, options) {
         if (!res.data || !res.data.data)
             return;
-        var collectionReceived = DSUtils.isArray(res.data.data);
+        var collectionReceived = js_data_1.utils.isArray(res.data.data);
         var itemsIndexed = {};
         var itemCollection = [].concat(res.data.included || [])
             .concat(res.data.data || []);
@@ -160,7 +150,7 @@ var DSJsonApiLightAdapter = (function (_super) {
             itemsIndexed[item.type][item.id] = item;
         }
         for (var type in itemsIndexed) {
-            var resource = resourceConfig.getResource(type);
+            var resource = this.store.getMapper(type);
             if (!resource) {
                 this.warn("Can't find resource '" + type + "'");
                 continue;
@@ -189,7 +179,7 @@ var DSJsonApiLightAdapter = (function (_super) {
                     }
                     if (relation.type === 'belongsTo' || relation.type === 'hasOne') {
                         var link = item.relationships[relationField].data;
-                        if (!DSUtils.isObject(link)) {
+                        if (!js_data_1.utils.isObject(link)) {
                             this.warn('Wrong relation somewhere, object expected');
                             continue;
                         }
@@ -200,7 +190,7 @@ var DSJsonApiLightAdapter = (function (_super) {
                     }
                     else if (relation.type === 'hasMany') {
                         var links = item.relationships[relationField].data;
-                        if (!DSUtils.isArray(links)) {
+                        if (!js_data_1.utils.isArray(links)) {
                             this.warn('Wrong relation somewhere, array expected');
                             continue;
                         }
@@ -229,10 +219,22 @@ var DSJsonApiLightAdapter = (function (_super) {
         }
         return outputDatas;
     };
-    return DSJsonApiLightAdapter;
-}(DSHttpAdapter));
-exports.DSJsonApiLightAdapter = DSJsonApiLightAdapter;
+    return JsonApiAdapter;
+}(js_data_http_1.HttpAdapter));
+exports.JsonApiAdapter = JsonApiAdapter;
 
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
 
 /***/ })
 /******/ ]);

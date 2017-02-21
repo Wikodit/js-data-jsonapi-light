@@ -1,8 +1,7 @@
-import * as JSData from 'js-data'
-import { DS } from '../ds'
+import { Mapper } from 'js-data'
+import { store } from '../ds'
 
-export const UserProfile:JSData.DSResourceDefinition<any>  = DS.defineResource({
-  name: 'UserProfile',
+export const UserProfile:Mapper  = store.defineMapper('UserProfile', {
   endpoint: 'user-profiles',
   relations: {
     belongsTo: {

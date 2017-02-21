@@ -1,8 +1,7 @@
 import * as JSData from 'js-data'
-import { DS } from '../ds'
+import { store } from '../ds'
 
-export const UserGroup:JSData.DSResourceDefinition<any>  = DS.defineResource({
-  name: 'UserGroup',
+export const UserGroup  = store.defineMapper('UserGroup', {
   endpoint: 'user-groups',
   relations: {
     hasMany: {

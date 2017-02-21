@@ -30,17 +30,17 @@
     "rest",
     "api"
   ],
+  "typings": "./typings/js-data-jsonapi-light.d.ts",
   "devDependencies": {
     "@types/chai": "^3.4.34",
     "@types/express": "^4.0.35",
-    "@types/js-data": "^2.8.31",
-    "@types/js-data-http": "^1.2.28",
     "@types/mocha": "^2.2.39",
     "@types/node": "^7.0.5",
     "@types/sinon": "^1.16.35",
     "chai": "^3.5.0",
     "express": "^4.14.1",
     "freeport": "^1.0.5",
+    "js-data-adapter": "^0.8.3",
     "karma": "^1.4.1",
     "karma-chai": "^0.1.0",
     "karma-coverage": "^1.1.1",
@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "es6-promise": "^4.0.5",
-    "js-data": "^2.10.0",
-    "js-data-http": "^2.2.2"
+    "js-data": "rc",
+    "js-data-http": "rc"
   }
 }

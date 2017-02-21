@@ -1,7 +1,8 @@
 import { User, UserGroup, UserProfile } from '../../resources'
 import { expect } from 'chai';
+import { store } from '../../ds';
 
-describe('manyToMany', () => {
+describe('relations/manyToMany', () => {
   describe('when resources are fetched with including their child of a manyToMany relation', () => {
     const
       USER_LENGTH = 1,

@@ -14,7 +14,8 @@
     "typings"
   ],
   "types": [
-    "typings/karma.d.ts"
+    "typings/karma.d.ts",
+    "src/main.d.ts"
   ],
   "include": [
     "src/**/*.ts"

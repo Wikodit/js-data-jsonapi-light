@@ -1,7 +1,8 @@
 import { Article, User, UserGroup, UserProfile } from '../../resources'
 import { expect } from 'chai';
+import { store } from '../../ds';
 
-describe('hasOne', () => {
+describe('relations/hasOne', () => {
   describe('when resources are fetched with two level of children included: belongsTo => hasOne => belongsTo', () => {
     const 
       ARTICLE = {
@@ -59,21 +60,21 @@ describe('hasOne', () => {
     })
 
     it('should have injected the child in its own datastore', () => {
-      let users:Array<any> = User.getAll();
+      let users:Array<any> = store.getAll('User');
       expect(users).to.have.lengthOf(1);
       expect(users[0].id).to.equal(USER.ID);
       expect(users[0].email).to.equal(USER.EMAIL);
     })
 
     it('should have injected the child parent in its own datastore', () => {
-      let groups:Array<any> = UserGroup.getAll();
+      let groups:Array<any> = store.getAll('UserGroup');
       expect(groups).to.have.lengthOf(1);
       expect(groups[0].id).to.equal(GROUP.ID);
       expect(groups[0].name).to.equal(GROUP.NAME);
     })
 
     it('should have injected the child of the child in its own datastore', () => {
-      let profiles:Array<any> = UserProfile.getAll();
+      let profiles:Array<any> = store.getAll('UserProfile');
       expect(profiles).to.have.lengthOf(1);
       expect(profiles[0].id).to.equal(PROFILE.ID);
       expect(profiles[0].firstname).to.equal(PROFILE.FIRSTNAME);

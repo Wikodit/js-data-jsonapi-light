@@ -25,6 +25,29 @@ const DS = new JSData.DS();
 DS.registerAdapter('jsonApi', jsonApiAdapter, { default: true })
 ```
 
+## Advanced support
+
+Some advanced features need some more configuration to work. That is the case when you want to retrieve metas informations from the JSONApi response.
+
+```js
+// If you do not use Webpack or else, you can simply use JSDataJsonApiLight.DSJsonApiLightAdapter or JSDataJsonApiLight.JSDataOverride instead
+import {DSJsonApiLightAdapter, JSDataOverride} from 'jsdata-jsonapi-light'
+
+const jsonApiAdapter = new DSJsonApiLightAdapter({
+  // Same options as DSHttpAdapter
+  // If a serialization option is given, it will be run before JSONApi serialization has occured
+  // If a deserialization option is given, it will be run after JSONApi deserialization has occured
+});
+
+const DS = new JSData.DS({
+  addToCache: JSDataOverride.addToCache,
+  mapperDefaults: {
+    wrap: JSDataOverride.mapperWrap
+  }
+});
+DS.registerAdapter('jsonApi', jsonApiAdapter, { default: true })
+```
+
 
 ## Development Status
 

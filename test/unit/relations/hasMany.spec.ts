@@ -1,7 +1,8 @@
 import { User, UserGroup, UserProfile } from '../../resources'
 import { expect } from 'chai';
+import { store } from '../../ds';
 
-describe('hasMany', () => {
+describe('relations/hasMany', () => {
   describe('when resources are fetched with including their hasMany => belongsTo relation', () => {
     const
       GROUP_LENGTH = 2,
@@ -68,7 +69,7 @@ describe('hasMany', () => {
     })
 
     it('should have injected children in their own datastore', () => {
-      let users:Array<any> = User.getAll();
+      let users:Array<any> = store.getAll('User');
       expect(users).to.have.lengthOf(3);
 
       let userIds = [users[0].id, users[1].id, users[2].id].sort()

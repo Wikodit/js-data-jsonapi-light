@@ -1,16 +1,21 @@
-/// <reference path="../typings/karma.d.ts" />
+import { DataStore } from 'js-data'
 
 declare var JSData:any;
 declare var JSDataJsonApiLight:any;
 
-const jsonApiAdapter = new JSDataJsonApiLight.DSJsonApiLightAdapter({
-  suffix: '.json',
-  basePath: 'api'
+export const store = new DataStore({
+  // addToCache: JSDataJsonApiLight.JSDataOverride.addToCache,
+  // mapperWrap: JSDataJsonApiLight.JSDataOverride.mapperWrap
 });
 
-export const DS = new JSData.DS();
-DS.registerAdapter('jsonApi', jsonApiAdapter, { default: true })
+const jsonApiAdapter = new JSDataJsonApiLight.JsonApiAdapter({
+  suffix: '.json',
+  basePath: 'api',
+  store: store
+});
 
-afterEach(function(){
-  DS.clear();
-})
+store.registerAdapter('jsonApi', jsonApiAdapter, { default: true })
+
+// afterEach(function(){
+//   DS.clear()
+// })
