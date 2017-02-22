@@ -46,15 +46,18 @@ store.findAll('User', {}, {
 
 ### Version
 
-0.0.1-alpha.1
+1.0.0-alpha.2
 
 ### What is done
 
 * Deserialization, supporting hasMany, hasOne, belongsTo relationships
+* Meta handling
 
 ### What is remaining
 
 * Serialization
+* ManyToMany
+* Error handling
 
 ## License
 
