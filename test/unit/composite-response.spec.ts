@@ -25,24 +25,24 @@ describe('Composite Response :', () => {
     
     beforeEach(() => {
       return store.findAll('User', {}, {
-        compositeResponse: true
+        raw: true // JS-Data has the support for a raw parameter in v3
       }).then((datas:any) => { response = datas })
     })
 
     afterEach(() => { response = null })
 
-    xit('should return a composite response in the findAll promise', () => {
-      expect(response).to.have.property('result');
+    it('should return a composite response in the findAll promise', () => {
+      expect(response).to.have.property('data');
       expect(response).to.have.property('meta');
     })
     
-    xit('should return the injected items in the result property of the composite response', () => {
-      expect(response.result).to.be.an('array').and.to.have.lengthOf(USER_LENGTH);
-      expect(response.result[0].id).to.equal(USER.ID);
-      expect(response.result[0].email).to.equal(USER.EMAIL);
+    it('should return the injected items in the data property of the composite response', () => {
+      expect(response.data).to.be.an('array').and.to.have.lengthOf(USER_LENGTH);
+      expect(response.data[0].id).to.equal(USER.ID);
+      expect(response.data[0].email).to.equal(USER.EMAIL);
     })
 
-    xit('should return the metas in the metas property of the composite response', () => {
+    it('should return the metas in the metas property of the composite response', () => {
       expect(response.meta).to.be.an('object');
       expect(response.meta.count).to.equal(META.COUNT);
       expect(response.meta.about).to.deep.equal(META.ABOUT);

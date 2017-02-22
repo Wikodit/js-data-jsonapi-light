@@ -41,7 +41,7 @@ module.exports = function (config) {
       type: 'lcov',
       dir: 'coverage/'
     },
-    reporters: ['dots', 'coverage'],
+    reporters: ['progress', 'coverage'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
