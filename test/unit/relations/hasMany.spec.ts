@@ -1,6 +1,7 @@
-import { User, UserGroup, UserProfile } from '../../resources'
+import * as Resources from '../../resources'
 import { expect } from 'chai';
 import { store } from '../../ds';
+import { Record } from 'js-data'
 
 describe('relations/hasMany', () => {
   describe('when resources are fetched with including their hasMany => belongsTo relation', () => {
@@ -31,10 +32,10 @@ describe('relations/hasMany', () => {
       },
       USER_IDS = [USER1.ID, USER2.ID, USER3.ID].sort();
     
-    let groups:Array<any>, group1:any, group2:any;
+    let groups:Array<any>;
 
     beforeEach(() => {
-      return UserGroup.findAll({
+      return store.findAll('UserGroup', {
         include: 'users'
       }).then((datas:Array<any>) => { groups = datas })
     })
@@ -43,10 +44,13 @@ describe('relations/hasMany', () => {
 
     it('should return an array of correct length', () => {
       expect(groups).to.be.an('array').and.to.have.lengthOf(GROUP_LENGTH);
-      [ group1, group2 ] = groups;
     })
 
+    xit('above fetch should be switched back to = groups, but .users fail if we put that')
+
     it('should return the correct attributes (including the id)', () => {
+      let [ group1, group2 ] = groups;
+
       expect(group1.id).to.equal(GROUP1.ID);
       expect(group1.name).to.equal(GROUP1.NAME);
 
@@ -55,6 +59,8 @@ describe('relations/hasMany', () => {
     })
 
     it('should return children within the attributes (with ids)', () => {
+      let [ group1, group2 ] = groups;
+
       expect(group1).to.have.property('users').to.have.lengthOf(GROUP1_USER_LENGTH);
       expect(group2).to.have.property('users').to.have.lengthOf(GROUP2_USER_LENGTH);
 
@@ -69,10 +75,16 @@ describe('relations/hasMany', () => {
     })
 
     it('should have injected children in their own datastore', () => {
-      let users:Array<any> = store.getAll('User');
+      let users:Array<Record> = store.getAll('User');
+      
       expect(users).to.have.lengthOf(3);
 
-      let userIds = [users[0].id, users[1].id, users[2].id].sort()
+      let userIds = [
+        users[0].get('id'),
+        users[1].get('id'),
+        users[2].get('id')
+      ].sort()
+
       expect(userIds).to.eql(USER_IDS);
     })
 

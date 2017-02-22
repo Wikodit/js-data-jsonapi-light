@@ -14,11 +14,12 @@ export const User = store.defineMapper('User',{
       'Article': {
         localField: 'articles',
         foreignKey: 'authorId'
-      },
-      'UserFavorite': {
-        localField: 'favorites',
-        foreignKey: 'articleId'
       }
+      // ,
+      // 'UserFavorite': {
+      //   localField: 'favorites',
+      //   foreignKey: 'articleId'
+      // }
     },
     belongsTo: {
       'UserGroup': {

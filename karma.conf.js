@@ -7,7 +7,7 @@ module.exports = function (config) {
     frameworks: ['mocha', 'chai', 'sinon'],
     files: [
       'node_modules/es6-promise/dist/es6-promise.auto.js',
-      'node_modules/js-data/dist/js-data.js',
+      { pattern: 'node_modules/js-data/dist/js-data.js', nocache: true, watched: true, served: true},
       'node_modules/js-data-http/dist/js-data-http.js',
       'dist/js-data-jsonapi-light.js',
       'test/**/*.spec.ts',

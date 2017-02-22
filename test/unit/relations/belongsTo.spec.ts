@@ -1,4 +1,4 @@
-import { User, UserProfile } from '../../resources'
+import * as Resources from '../../resources'
 import { expect } from 'chai';
 import { store } from '../../ds';
 
@@ -19,12 +19,16 @@ describe('relations/belongsTo', () => {
     let userProfiles:Array<any>;
     
     beforeEach(() => {
-      return UserProfile.findAll({
+      return store.findAll('UserProfile', {
         include: 'user'
-      }).then((datas:Array<any>) => { userProfiles = datas })
+      }).then((datas:Array<any>) => {
+        userProfiles = datas
+      })
     })
 
-    afterEach(() => { userProfiles = null })
+    afterEach(() => {
+      userProfiles = null
+    })
 
     it('should return an array of correct length', () => {
       expect(userProfiles).to.be.an('array').and.to.have.lengthOf(PROFILE_LENGTH);

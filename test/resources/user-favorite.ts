@@ -3,7 +3,7 @@ import { store } from '../ds'
 
 export const UserFavorite = store.defineMapper('UserFavorite', {
   relations: {
-    hasMany: {
+    belongsTo: {
       'Article': {
         localField: 'article',
         localKey: 'articleId'
