@@ -9,12 +9,13 @@ export const Article  = store.defineMapper('Article', {
         localField: 'author',
         localKey: 'authorId'
       }
-    },
-    hasMany: {
-      'UserFavorite': {
-        localField: 'followers',
-        foreignKey: 'articleId'
-      }
     }
+    // ,
+    // hasMany: {
+    //   'UserFavorite': {
+    //     localField: 'followers',
+    //     foreignKey: 'articleId'
+    //   }
+    // }
   }
 })

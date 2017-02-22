@@ -1,4 +1,4 @@
-import { User, UserGroup, UserProfile } from '../../resources'
+import * as Resources from '../../resources'
 import { expect } from 'chai';
 import { store } from '../../ds';
 
@@ -23,7 +23,7 @@ describe('relations/manyToMany', () => {
     let users:Array<any>, user:any;
 
     beforeEach(() => {
-      return User.findAll({
+      return store.findAll('User', {
         include: 'favorites'
       }).then((datas:Array<any>) => { users = datas })
     })

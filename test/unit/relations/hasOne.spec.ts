@@ -1,4 +1,4 @@
-import { Article, User, UserGroup, UserProfile } from '../../resources'
+import * as Resources from '../../resources'
 import { expect } from 'chai';
 import { store } from '../../ds';
 
@@ -26,7 +26,7 @@ describe('relations/hasOne', () => {
     let article:any;
 
     beforeEach(() => {
-      return Article.find(ARTICLE.ID, {
+      return store.find('Article', ARTICLE.ID, {
         params: {
           include: 'user.profile,user.group'
         }
