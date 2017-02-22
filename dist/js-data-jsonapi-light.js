@@ -131,6 +131,17 @@ var JsonApiAdapter = (function (_super) {
         _this.store = options.store;
         return _this;
     }
+    JsonApiAdapter.prototype.overrideStore = function () {
+        var _addToCache = this.store.addToCache, _wrap = this.store.mapperDefaults.wrap;
+        this.store.mapperDefaults.wrap = function (data, opts) {
+            var result = js_data_1.Mapper.prototype.wrap.call(this, data, opts);
+            if (opts.raw) {
+                data.result = result;
+                return data;
+            }
+            return result;
+        };
+    };
     JsonApiAdapter.prototype.warn = function () {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
@@ -143,7 +154,7 @@ var JsonApiAdapter = (function (_super) {
         console.log(data);
         return data;
     };
-    JsonApiAdapter.prototype.jsonApiDeserialize = function (mapper, res, options) {
+    JsonApiAdapter.prototype.jsonApiDeserialize = function (mapper, res, opts) {
         if (!res.data || !res.data.data)
             return;
         var collectionReceived = js_data_1.utils.isArray(res.data.data);
@@ -185,14 +196,13 @@ var JsonApiAdapter = (function (_super) {
                     continue;
                 for (var relationField in (item.relationships || {})) {
                     var relation = resource.relationByFields[relationField];
-                    if (!relation) {
-                        this.warn('Server has relationship client has not.');
+                    if (!relation || !item.relationships[relationField] || !item.relationships[relationField].data) {
                         continue;
                     }
                     if (relation.type === 'belongsTo' || relation.type === 'hasOne') {
                         var link = item.relationships[relationField].data;
                         if (!js_data_1.utils.isObject(link)) {
-                            this.warn('Wrong relation somewhere, object expected');
+                            this.warn('Wrong relation somewhere, object expected', relation);
                             continue;
                         }
                         if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
@@ -222,14 +232,59 @@ var JsonApiAdapter = (function (_super) {
                 }
             }
         }
+        var outputDatas;
         if (!collectionReceived) {
-            return res.data.data.attributes;
+            outputDatas = res.data.data.attributes;
         }
-        var outputDatas = [];
-        for (var i_3 = 0, l = res.data.data.length; i_3 < l; i_3++) {
-            outputDatas.push(res.data.data[i_3].attributes);
+        else {
+            outputDatas = [];
+            for (var i_3 = 0, l = res.data.data.length; i_3 < l; i_3++) {
+                outputDatas.push(res.data.data[i_3].attributes);
+            }
         }
-        return outputDatas;
+        if (!opts.raw) {
+            return outputDatas;
+        }
+        return {
+            result: outputDatas,
+            meta: res.data.meta
+        };
+    };
+    JsonApiAdapter.prototype.handleResponse = function (opts) {
+        return function (response) {
+            if (opts && opts.raw) {
+                response.meta = response.data.meta;
+                response.data = response.data.result;
+            }
+            return response;
+        };
+    };
+    JsonApiAdapter.prototype.find = function (mapper, id, opts) {
+        return _super.prototype.find.call(this, mapper, id, opts).then(this.handleResponse(opts));
+    };
+    JsonApiAdapter.prototype.findAll = function (mapper, query, opts) {
+        return _super.prototype.findAll.call(this, mapper, query, opts).then(this.handleResponse(opts));
+    };
+    JsonApiAdapter.prototype.create = function (mapper, props, opts) {
+        return _super.prototype.create.call(this, mapper, props, opts).then(this.handleResponse(opts));
+    };
+    JsonApiAdapter.prototype.createMany = function (mapper, props, opts) {
+        return _super.prototype.createMany.call(this, mapper, props, opts).then(this.handleResponse(opts));
+    };
+    JsonApiAdapter.prototype.update = function (mapper, id, props, opts) {
+        return _super.prototype.update.call(this, mapper, id, opts).then(this.handleResponse(opts));
+    };
+    JsonApiAdapter.prototype.updateAll = function (mapper, props, query, opts) {
+        return _super.prototype.updateAll.call(this, mapper, query, opts).then(this.handleResponse(opts));
+    };
+    JsonApiAdapter.prototype.updateMany = function (mapper, records, opts) {
+        return _super.prototype.updateMany.call(this, mapper, records, opts).then(this.handleResponse(opts));
+    };
+    JsonApiAdapter.prototype.destroy = function (mapper, id, opts) {
+        return _super.prototype.destroy.call(this, mapper, id, opts).then(this.handleResponse(opts));
+    };
+    JsonApiAdapter.prototype.destroyAll = function (mapper, query, opts) {
+        return _super.prototype.destroyAll.call(this, mapper, query, opts).then(this.handleResponse(opts));
     };
     return JsonApiAdapter;
 }(js_data_http_1.HttpAdapter));

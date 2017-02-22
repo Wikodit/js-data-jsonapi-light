@@ -4,17 +4,6 @@ import { utils, DataStore, Mapper } from 'js-data';
 import { HttpAdapter } from 'js-data-http';
 import { Adapter } from 'js-data-adapter';
 
-// export class JSDataOverride {
-//   addToCache (name:any, result:any, options?:any) {
-    
-//   }
-
-//   mapperWrap (data:any, options?:any) {
-//     console.log('MapperWrap options', options)
-//     return data
-//   }
-// }
-
 export class JsonApiAdapter extends HttpAdapter{
   adapter: Adapter;
   private store: DataStore;
@@ -56,6 +45,31 @@ export class JsonApiAdapter extends HttpAdapter{
 
     selfWrapper.self = this;
     this.store = options.store;
+
+    // this.overrideStore();
+  }
+
+  private overrideStore () {
+    const
+      _addToCache = this.store.addToCache,
+      _wrap = this.store.mapperDefaults.wrap
+
+    // this.store.addToCache = function(name:string, data:any, opts:Object) {
+    //   if ((<any>opts).raw){
+    //   console.warn(data, opts)
+    //   }
+    //   return _addToCache.apply(this, arguments);
+    // }
+    this.store.mapperDefaults.wrap = function(data:any, opts:Object) {
+      let result:any = (<any>Mapper.prototype).wrap.call(this, data, opts);
+
+      if ((<any>opts).raw){
+        data.result = result;
+        return data;
+      }
+
+      return result;
+    }
   }
 
   private warn(...args:any[]) {
@@ -71,8 +85,7 @@ export class JsonApiAdapter extends HttpAdapter{
     return data;
   }
   
-  public jsonApiDeserialize(mapper:Mapper, res:any, options:any){
-    // console.log('Deserialize: ', resourceConfig, res);
+  public jsonApiDeserialize(mapper:Mapper, res:any, opts:any){
     
     if (!res.data || !res.data.data) return;
 
@@ -122,15 +135,14 @@ export class JsonApiAdapter extends HttpAdapter{
 
         for (let relationField in (item.relationships || {})) {
           let relation:any = resource.relationByFields[relationField]
-          if (!relation) {
-            this.warn('Server has relationship client has not.');
+          if (!relation || !item.relationships[relationField] || !item.relationships[relationField].data) {
             continue;
           }
 
           if (relation.type === 'belongsTo' || relation.type === 'hasOne') {
             let link:any = item.relationships[relationField].data
             if (!utils.isObject(link)) {
-              this.warn('Wrong relation somewhere, object expected');
+              this.warn('Wrong relation somewhere, object expected', relation);
               continue;
             }
 
@@ -158,43 +170,70 @@ export class JsonApiAdapter extends HttpAdapter{
       }
     }
 
+    let outputDatas:Array<any> | any;
     if (!collectionReceived) {
-      // console.log('lolilol', res.data.data.attributes);
-      return res.data.data.attributes;
+      outputDatas = res.data.data.attributes;
+    } else {
+      outputDatas = [];
+      for (let i = 0, l = res.data.data.length; i < l; i++) {
+        outputDatas.push(res.data.data[i].attributes);
+      }
     }
 
-    let outputDatas:Array<any> = [];
-    for (let i = 0, l = res.data.data.length; i < l; i++) {
-      outputDatas.push(res.data.data[i].attributes);
+    if (!opts.raw) {
+      return outputDatas;
     }
 
-    // console.log(outputDatas);
-    return outputDatas;
+    return {
+      result: outputDatas,
+      meta: res.data.meta
+    };
   }
 
-  // public HTTP(options?: any): JSData.JSDataPromise<JSData.DSHttpAdapterPromiseResolveType> {
-  //   let compositeResponse = (<any>this.defaults).compositePromiseResponse;
-  //   if(options.compositePromiseResponse !== undefined)
-  //     compositeResponse = options.compositePromiseResponse;
+  private handleResponse (opts?:any) { return function (response:any): Promise<any> {
+    if (opts && opts.raw) {
+      response.meta = response.data.meta;
+      response.data = response.data.result;
+    }
 
-  //   return super.HTTP(options).then((response: any) => {
-  //     return response;
-  //   }).catch((err: any) => {
-  //     return <any>Promise.reject(err);
-  //   })
-  // }
+    // @todo #6 need to handle errors here
 
-  // private handleError(config: JSData.DSResourceDefinition<any>, options: JSData.DSConfiguration, error:any) {
-  //   return error;
-  // }
+    return response;
+  }}
 
-  // public findAll(config: JSData.DSResourceDefinition<any>, params?: JSData.DSFilterArg, options?: JSData.DSConfiguration): JSData.JSDataPromise<any> {
-  //   return super.findAll(config, params, options).catch(
-  //     (error: any) => {
-  //       return Promise.reject(this.handleError(config, options, error));
-  //     }
-  //   ).then((data:any) => {
-  //     return Promise.resolve({data:data, meta: 'lol'})
-  //   });
-  // }
+  public find(mapper: Mapper, id: string | number, opts?: any): Promise<any> {
+    return super.find(mapper, id, opts).then(this.handleResponse(opts))
+  }  
+  
+  public findAll(mapper: Mapper, query?: any, opts?: any): Promise<any> {
+    return super.findAll(mapper, query, opts).then(this.handleResponse(opts))
+  }
+
+  public create(mapper: Mapper, props: any, opts?: any): Promise<any> {
+    return super.create(mapper, props, opts).then(this.handleResponse(opts))
+  }
+
+  public createMany(mapper: Mapper, props: any, opts?: any): Promise<any> {
+    return super.createMany(mapper, props, opts).then(this.handleResponse(opts))
+  }
+
+  public update(mapper: Mapper, id: any, props: any, opts?: any): Promise<any> {
+    return super.update(mapper, id, opts).then(this.handleResponse(opts))
+  }
+
+  public updateAll(mapper: Mapper, props: any, query: any, opts?: any): Promise<any> {
+    return super.updateAll(mapper, query, opts).then(this.handleResponse(opts))
+  }
+
+  public updateMany(mapper: Mapper, records: any, opts?: any): Promise<any> {
+    return super.updateMany(mapper, records, opts).then(this.handleResponse(opts))
+  }
+
+  public destroy(mapper: Mapper, id: string | number, opts?: any): Promise<any> {
+    return super.destroy(mapper, id, opts).then(this.handleResponse(opts))
+  }
+
+  public destroyAll(mapper: Mapper, query: any, opts?: any): Promise<any> {
+    return super.destroyAll(mapper, query, opts).then(this.handleResponse(opts))
+  }
 }

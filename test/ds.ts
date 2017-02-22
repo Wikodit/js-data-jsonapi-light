@@ -6,10 +6,7 @@ declare var JSData:any;
 declare var JSDataJsonApiLight:any;
 
 if (!window.store) {
-  window.store = new DataStore({
-    // addToCache: JSDataJsonApiLight.JSDataOverride.addToCache,
-    // mapperWrap: JSDataJsonApiLight.JSDataOverride.mapperWrap
-  });
+  window.store = new DataStore();
 }
 
 export const store = window.store
