@@ -59,6 +59,7 @@
   "dependencies": {
     "es6-promise": "^4.0.5",
     "js-data": "^3.0.0-rc.7",
-    "js-data-http": "^3.0.0-rc.2"
+    "js-data-http": "^3.0.0-rc.2",
+    "watchpack": "1.2.1"
   }
 }

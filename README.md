@@ -18,15 +18,21 @@ Load `js-data-jsonapi-light.js` last.
 import { DataStore } from 'js-data'
 import { JsonApiAdapter } from 'js-data-jsonapi-light'
 
-// If you don't use import :
+// Or :
+// const store = new JSData.DataStore();
+const store = new DataStore();
+
+// Or :
 // const jsonApiAdapter = new JSDataJsonApiLight.JsonApiAdapter({
 const jsonApiAdapter = new JsonApiAdapter({
+  // Store needs to be given to the adapter
+  store: store
+
   // Same options as DSHttpAdapter
   // If a serialization option is given, it will be run before JSONApi serialization has occured
   // If a deserialization option is given, it will be run after JSONApi deserialization has occured
 });
 
-const store = new DataStore();
 store.registerAdapter('jsonApi', jsonApiAdapter, { default: true })
 ```
 

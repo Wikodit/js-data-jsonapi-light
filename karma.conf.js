@@ -49,6 +49,6 @@ module.exports = function (config) {
     browsers: ['PhantomJS'],
     singleRun: process.env.NODE_ENV !== 'development',
     concurrency: Infinity,
-    // client: { captureConsole: process.env.NODE_ENV === 'development' }
+    //client: { captureConsole: process.env.NODE_ENV === 'development' }
   })
 }
