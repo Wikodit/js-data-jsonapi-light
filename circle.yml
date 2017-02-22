@@ -1,0 +1,14 @@
+test:
+  pre:
+    - npm install -g karma-cli
+machine:
+  node:
+    version: 6.1.0
+dependencies:
+  pre:
+    - echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+deployment:
+  npm:
+    tag: /v[0-9]+(\.[0-9]+)*/
+    commands:
+      - npm publish

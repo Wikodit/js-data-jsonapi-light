@@ -45,7 +45,7 @@ module.exports = function (config) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
+    autoWatch: process.env.NODE_ENV === 'development',
     browsers: ['PhantomJS'],
     singleRun: process.env.NODE_ENV !== 'development',
     concurrency: Infinity,

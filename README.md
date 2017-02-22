@@ -15,14 +15,19 @@ For a more complete integration, you could use: [js-data-jsonapi](https://github
 Load `js-data-jsonapi-light.js` last.
 
 ```js
-const jsonApiAdapter = new JSDataJsonApiLight.DSJsonApiLightAdapter({
+import { DataStore } from 'js-data'
+import { JsonApiAdapter } from 'js-data-jsonapi-light'
+
+// If you don't use import :
+// const jsonApiAdapter = new JSDataJsonApiLight.JsonApiAdapter({
+const jsonApiAdapter = new JsonApiAdapter({
   // Same options as DSHttpAdapter
   // If a serialization option is given, it will be run before JSONApi serialization has occured
   // If a deserialization option is given, it will be run after JSONApi deserialization has occured
 });
 
-const DS = new JSData.DS();
-DS.registerAdapter('jsonApi', jsonApiAdapter, { default: true })
+const store = new DataStore();
+store.registerAdapter('jsonApi', jsonApiAdapter, { default: true })
 ```
 
 ## Advanced support
