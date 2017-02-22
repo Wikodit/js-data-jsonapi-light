@@ -1,4 +1,4 @@
-/// <reference path="./main.d.ts" />
+/// <reference path="../typings/main.d.ts" />
 
 import { utils, DataStore, Mapper } from 'js-data';
 import { HttpAdapter } from 'js-data-http';

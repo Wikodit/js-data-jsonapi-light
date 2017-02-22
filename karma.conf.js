@@ -10,6 +10,8 @@ module.exports = function (config) {
       { pattern: 'node_modules/js-data/dist/js-data.js', nocache: true, watched: true, served: true},
       'node_modules/js-data-http/dist/js-data-http.js',
       'dist/js-data-jsonapi-light.js',
+      'test/ds.ts',
+      'test/resources/**/*.ts',
       'test/**/*.spec.ts',
       { pattern: 'test/api/**/*.json', watched: true, served: true, included: false }
     ],

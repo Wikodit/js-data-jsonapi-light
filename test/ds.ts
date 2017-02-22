@@ -23,10 +23,5 @@ const jsonApiAdapter = new JSDataJsonApiLight.JsonApiAdapter({
 store.registerAdapter('jsonApi', jsonApiAdapter, { default: true })
 
 afterEach(function(){
-  // utils.forOwn(store._collections, (collection:Collection, name:string) => {
-  //   collection.removeAll({});
-    
-  //   (<any>store._completedQueries)[name] = {};
-  // });
   (<any>store).clear()
 })

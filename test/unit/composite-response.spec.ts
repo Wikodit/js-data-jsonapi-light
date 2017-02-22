@@ -1,5 +1,5 @@
 import * as JSData from 'js-data';
-import { User } from '../resources'
+import * as Resources from '../resources'
 import { expect } from 'chai';
 import { store } from '../ds';
 
@@ -24,7 +24,7 @@ describe('Composite Response :', () => {
     let response:any;
     
     beforeEach(() => {
-      return User.findAll({}, {
+      return store.findAll('User', {}, {
         compositeResponse: true
       }).then((datas:any) => { response = datas })
     })

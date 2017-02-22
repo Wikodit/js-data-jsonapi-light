@@ -1,6 +1,6 @@
-import * as Resources from '../../resources'
 import { expect } from 'chai';
 import { store } from '../../ds';
+import * as Resources from '../../resources'
 
 describe('relations/belongsTo', () => {
   describe('when resources are fetched with including their belongsTo => hasOne relation', () => {

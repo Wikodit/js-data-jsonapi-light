@@ -1,7 +1,6 @@
 import * as JSData from 'js-data'
-import { store } from '../ds'
 
-export const UserGroup  = store.defineMapper('UserGroup', {
+export const UserGroup  = window.store.defineMapper('UserGroup', {
   endpoint: 'user-groups',
   relations: {
     hasMany: {

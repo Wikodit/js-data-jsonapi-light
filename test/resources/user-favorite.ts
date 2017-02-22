@@ -1,7 +1,6 @@
 import * as JSData from 'js-data'
-import { store } from '../ds'
 
-export const UserFavorite = store.defineMapper('UserFavorite', {
+export const UserFavorite = window.store.defineMapper('UserFavorite', {
   relations: {
     belongsTo: {
       'Article': {

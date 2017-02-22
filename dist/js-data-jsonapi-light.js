@@ -7,7 +7,7 @@
 		exports["JSDataJsonApiLight"] = factory(require("js-data"), require("js-data-http"));
 	else
 		root["JSDataJsonApiLight"] = factory(root["JSData"], root["JSDataHttp"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_1__, __WEBPACK_EXTERNAL_MODULE_2__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_0__, __WEBPACK_EXTERNAL_MODULE_1__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -73,11 +73,23 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_0__;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -87,8 +99,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var js_data_1 = __webpack_require__(1);
-var js_data_http_1 = __webpack_require__(2);
+var js_data_1 = __webpack_require__(0);
+var js_data_http_1 = __webpack_require__(1);
 var JsonApiAdapter = (function (_super) {
     __extends(JsonApiAdapter, _super);
     function JsonApiAdapter(options) {
@@ -223,18 +235,6 @@ var JsonApiAdapter = (function (_super) {
 }(js_data_http_1.HttpAdapter));
 exports.JsonApiAdapter = JsonApiAdapter;
 
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
 
 /***/ })
 /******/ ]);

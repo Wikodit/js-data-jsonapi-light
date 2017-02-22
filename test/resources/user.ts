@@ -1,7 +1,6 @@
 import * as JSData from 'js-data'
-import { store } from '../ds'
 
-export const User = store.defineMapper('User',{
+export const User = window.store.defineMapper('User',{
   endpoint: 'users',
   relations: {
     hasOne: {

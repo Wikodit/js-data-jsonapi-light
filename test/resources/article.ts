@@ -1,7 +1,6 @@
 import * as JSData from 'js-data'
-import { store } from '../ds'
 
-export const Article  = store.defineMapper('Article', {
+export const Article  = window.store.defineMapper('Article', {
   endpoint: 'articles',
   relations: {
     belongsTo: {

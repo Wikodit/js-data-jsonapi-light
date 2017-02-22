@@ -1,7 +1,6 @@
 import { Mapper } from 'js-data'
-import { store } from '../ds'
 
-export const UserProfile  = store.defineMapper('UserProfile', {
+export const UserProfile  = window.store.defineMapper('UserProfile', {
   endpoint: 'user-profiles',
   relations: {
     belongsTo: {
