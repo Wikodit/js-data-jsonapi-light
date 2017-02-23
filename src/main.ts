@@ -52,12 +52,40 @@ export class JsonApiAdapter extends HttpAdapter{
     return;
   }
   
-  public jsonApiSerialize(resourceConfig:Mapper, data:any){
-    // console.log('Serialize: ', resourceConfig, res);
+  public jsonApiSerialize(mapper:any, data:any){
+    let id:any = data[mapper.idAttribute];
+    delete data[mapper.idAttribute];
     
-    console.log('lol', data)
+    // Just cache a pointer to relations for the Resource
+    this.mapperCacheRelationByField(mapper);
 
-    return data;
+    let relationships:any = {}
+
+    for (let key in data) {
+      let relation:any = mapper.relationByFieldId[key];
+      if (relation) {
+        relationships[relation.localField] = {
+          data: {
+            type: relation.relation,
+            id: data[key]
+          }
+        }
+        delete data[key]
+      }
+    }
+
+    let output:any = {
+      data: {
+        type: mapper.name,
+        attributes: data
+      }
+    }
+
+    // Work for update or create, if an id is given, server should accept it
+    if (id) output.data.id = id;
+    if (Object.keys(relationships)) output.data.relationships = relationships;
+
+    return output;
   }
   
   public jsonApiDeserialize(mapper:Mapper, res:any, opts:any){
@@ -93,14 +121,7 @@ export class JsonApiAdapter extends HttpAdapter{
       if (!resource) { this.warn(`Can\'t find resource '${type}'`); continue; }
 
       // Just cache a pointer to relations for the Resource
-      if (!resource.relationByFields) {
-        resource.relationByFields = {};
-        for (let i = 0, l = (resource.relationList || []).length; i < l; i++ ) {
-          let field:string = resource.relationList[i].localField;
-          if (!field) { this.warn('localField missing'); continue; }
-          resource.relationByFields[field] = resource.relationList[i];
-        }
-      }
+      this.mapperCacheRelationByField(resource);
 
       for (let id in itemsIndexed[type]) {
         let item:any = itemsIndexed[type][id];
@@ -109,7 +130,7 @@ export class JsonApiAdapter extends HttpAdapter{
         if (!item.relationships || !Object.keys(item.relationships)) continue;
 
         for (let relationField in (item.relationships || {})) {
-          let relation:any = resource.relationByFields[relationField]
+          let relation:any = resource.relationByField[relationField]
           if (!relation || !item.relationships[relationField] || !item.relationships[relationField].data) {
             continue;
           }
@@ -165,6 +186,27 @@ export class JsonApiAdapter extends HttpAdapter{
     };
   }
 
+  private mapperCacheRelationByField(mapper:any):void {
+    if (!mapper.relationByField || !mapper.relationByFieldId) {
+        mapper.relationByField = {};
+        mapper.relationByFieldId = {};
+        for (let i = 0, l = (mapper.relationList || []).length; i < l; i++ ) {
+          let field:string = mapper.relationList[i].localField;
+          let key:string = mapper.relationList[i].localKey;
+
+          if (key) {
+            mapper.relationByFieldId[key] = mapper.relationList[i];
+          }
+
+          if (field) {
+            mapper.relationByField[field] = mapper.relationList[i];
+          } else {
+            this.warn('localField missing'); continue;
+          }
+        }
+      }
+  }
+
   private handleResponse (opts?:any) { return function (response:any): Promise<any> {
     if (opts && opts.raw) {
       response.meta = response.data.meta;
@@ -185,7 +227,6 @@ export class JsonApiAdapter extends HttpAdapter{
   }
 
   public create(mapper: Mapper, props: any, opts?: any): Promise<any> {
-    console.log('create')
     return super.create(mapper, props, opts).then(this.handleResponse(opts))
   }
 

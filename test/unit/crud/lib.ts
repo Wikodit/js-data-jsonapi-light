@@ -7,6 +7,8 @@ export function respondJson(route: string, content?: any, statusCode?: number): 
     try { body = JSON.parse(request.requestBody); } catch (e) {}
     reqPointer.body = body;
     reqPointer.headers = request.requestHeaders;
+    reqPointer.url = request.url;
+    reqPointer.method = request.method;
 
     request.respond(
       statusCode || 200,
