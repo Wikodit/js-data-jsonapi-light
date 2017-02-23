@@ -3,7 +3,7 @@
 [![NPM][npmB]][npmL] [![CircleCI build][circleciMB]][circleciML] [![CircleCI build develop][circleciB]][circleciL] [![Codecov][codecovB]][codecovL] [![Issues][issuesB]][issuesL]
 
 [npmB]: https://img.shields.io/npm/v/js-data-jsonapi-light.svg?style=flat
-[npmL]: https://www.npmjs.org/package/js-data-json-light
+[npmL]: https://www.npmjs.org/package/js-data-jsonapi-light
 [issuesB]: https://img.shields.io/github/issues/Wikodit/js-data-jsonapi-light.svg
 [issuesL]: https://github.com/Wikodit/js-data-jsonapi-light/issues
 [circleciB]: https://img.shields.io/circleci/project/Wikodit/js-data-jsonapi-light/develop.svg?style=flat&label=develop

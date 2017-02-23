@@ -7,6 +7,7 @@ import { Adapter } from 'js-data-adapter';
 export class JsonApiAdapter extends HttpAdapter{
   adapter: Adapter;
   private store: DataStore;
+  private options: any;
 
   constructor(options?:any) {
     options = utils.deepMixIn({
@@ -19,25 +20,31 @@ export class JsonApiAdapter extends HttpAdapter{
       throw new Error('JsonApiAdapter needs to be given a store option.')
     }
 
-    if (options.serialize) {
-      options.beforeSerialize = options.serialize
-    }
-
-    if (options.deserialize) {
-      options.afterDeserialize = options.deserialize
-    }
-
     var selfWrapper:any = {};
 
     options.serialize = function(wrapper:any):any{
-      return function(){
-        return wrapper.self.jsonApiSerialize.apply(wrapper.self, arguments);
+      return function(mapper:any, data:any, opts:any){
+        let 
+          beforeSerialize = opts.beforeSerialize || mapper.beforeSerialize || wrapper.self.options.beforeSerialize,
+          afterSerialize = opts.afterSerialize || mapper.afterSerialize || wrapper.self.options.afterSerialize;
+        
+        if (beforeSerialize) data = beforeSerialize.call(wrapper.self, mapper, data, opts);
+        data = wrapper.self.jsonApiSerialize.call(wrapper.self, mapper, data, opts);
+        if (afterSerialize) data = afterSerialize.call(wrapper.self, mapper, data, opts);
+        return data;
       }
     }(selfWrapper);
 
     options.deserialize = function(wrapper:any):any{
-      return function(){
-        return wrapper.self.jsonApiDeserialize.apply(wrapper.self, arguments);
+      return function(mapper:any, res:any, opts:any){
+        let 
+          beforeDeserialize = opts.beforeDeserialize || mapper.beforeDeserialize || wrapper.self.options.beforeDeserialize,
+          afterDeserialize = opts.afterDeserialize || mapper.afterDeserialize || wrapper.self.options.afterDeserialize;
+        
+        if (beforeDeserialize) res = beforeDeserialize.call(wrapper.self, mapper, res, opts);
+        res = wrapper.self.jsonApiDeserialize.call(wrapper.self, mapper, res, opts);
+        if (afterDeserialize) res = afterDeserialize.call(wrapper.self, mapper, res, opts);
+        return res;
       }
     }(selfWrapper);
 
@@ -45,6 +52,7 @@ export class JsonApiAdapter extends HttpAdapter{
 
     selfWrapper.self = this;
     this.store = options.store;
+    this.options = options;
   }
   
   private warn(...args:any[]) {
@@ -218,16 +226,30 @@ export class JsonApiAdapter extends HttpAdapter{
     return response;
   }}
 
+  private handleBeforeLifecycle (opts?:any): Promise<void> {
+    if(opts && (opts.serialize || opts.deserialize)) {
+      return Promise.reject(new Error('You can not use deserialize and serialize options with this adapter, you should instead provide an afterSerialize, a beforeSerialize, an afterDeserialize or a beforeDeserialize.'))
+    }
+
+    return Promise.resolve();
+  }
+
   public find(mapper: Mapper, id: string | number, opts?: any): Promise<any> {
-    return super.find(mapper, id, opts).then(this.handleResponse(opts))
+    return this.handleBeforeLifecycle(opts).then(() => {
+      return HttpAdapter.prototype.find.call(this, mapper, id, opts);
+    }).then(this.handleResponse(opts));
   }  
   
   public findAll(mapper: Mapper, query?: any, opts?: any): Promise<any> {
-    return super.findAll(mapper, query, opts).then(this.handleResponse(opts))
+    return this.handleBeforeLifecycle(opts).then(() => {
+      return HttpAdapter.prototype.findAll.call(this, mapper, query, opts);
+    }).then(this.handleResponse(opts));
   }
 
   public create(mapper: Mapper, props: any, opts?: any): Promise<any> {
-    return super.create(mapper, props, opts).then(this.handleResponse(opts))
+    return this.handleBeforeLifecycle(opts).then(() => {
+      return HttpAdapter.prototype.create.call(this, mapper, props, opts);
+    }).then(this.handleResponse(opts))
   }
 
   public createMany(mapper: Mapper, props: any, opts?: any): Promise<any> {
@@ -238,7 +260,9 @@ export class JsonApiAdapter extends HttpAdapter{
     // Ensure id is properly set
     props[mapper.idAttribute] = id;
 
-    return super.update(mapper, id, props, opts).then(this.handleResponse(opts))
+    return this.handleBeforeLifecycle(opts).then(() => {
+      return HttpAdapter.prototype.update.call(this, mapper, id, props, opts)
+    }).then(this.handleResponse(opts))
   }
 
   public updateAll(mapper: Mapper, props: any, query: any, opts?: any): Promise<any> {
@@ -250,7 +274,9 @@ export class JsonApiAdapter extends HttpAdapter{
   }
 
   public destroy(mapper: Mapper, id: string | number, opts?: any): Promise<any> {
-    return super.destroy(mapper, id, opts).then(this.handleResponse(opts))
+    return this.handleBeforeLifecycle(opts).then(() => {
+      return HttpAdapter.prototype.destroy.call(this, mapper, id, opts);
+    }).then(this.handleResponse(opts))
   }
 
   public destroyAll(mapper: Mapper, query: any, opts?: any): Promise<any> {

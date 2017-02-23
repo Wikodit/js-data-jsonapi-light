@@ -2,11 +2,11 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { store } from '../../ds';
 import * as Resources from '../../resources';
-import { respondJson } from './lib';
+import { respondJson } from '../lib';
 
 describe('CREATE', () => {
   let requests:Array<any> = [];
-  let server:any = null
+  let server:any = null;
 
   beforeEach(() => {
     server = sinon.fakeServer.create();
