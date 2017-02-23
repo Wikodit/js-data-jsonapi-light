@@ -1,29 +1,50 @@
 # js-data-jsonapi-light
 
+[![NPM][npmB]][npmL] [![CircleCI build][circleciMB]][circleciML] [![CircleCI build develop][circleciB]][circleciL] [![Codecov][codecovB]][codecovL] [![Issues][issuesB]][issuesL]
+
+[npmB]: https://img.shields.io/npm/v/js-data-jsonapi-light.svg?style=flat
+[npmL]: https://www.npmjs.org/package/js-data-json-light
+[issuesB]: https://img.shields.io/github/issues/Wikodit/js-data-jsonapi-light.svg
+[issuesL]: https://github.com/Wikodit/js-data-jsonapi-light/issues
+[circleciB]: https://img.shields.io/circleci/project/Wikodit/js-data-jsonapi-light/develop.svg?style=flat&label=build%20develop
+[circleciL]: https://circleci.com/gh/Wikodit/js-data-jsonapi-light/tree/develop
+[circleciMB]: https://img.shields.io/circleci/project/Wikodit/js-data-jsonapi-light/master.svg?style=flat&label=build%20master
+[circleciML]: https://circleci.com/gh/Wikodit/js-data-jsonapi-light/tree/master
+[codecovB]: https://img.shields.io/codecov/c/github/Wikodit/js-data-jsonapi-light/develop.svg?style=flat&label=coverage
+[codecovL]: https://codecov.io/gh/Wikodit/js-data-jsonapi-light
+
 ## Overview
 
 JsonAPI Adapter based on [js-data-http](https://github.com/js-data/js-data-http) for [js-data](http://www.js-data.io)
 
 This adapter just add a light serialize and deserialize layer over DSHttpAdapter.
 
-For a more complete integration, you could use: [js-data-jsonapi](https://github.com/BlairAllegroTech/js-data-jsonapi)
+## Compatibility
+
+| js-data      | >= 3.0.0-rc.7 |
+| js-data-http | >= 3.0.0-rc.2 |
+
+By design it is not compatible with JS-Data v2, for a full integration on v2, you could use: [js-data-jsonapi](https://github.com/BlairAllegroTech/js-data-jsonapi).
 
 ## Quick Start
 
-`npm install --save js-data js-data-http js-data-jsonapi`
+First you need to install everything needed :
+
+`npm install --save js-data js-data-http js-data-jsonapi js-data-jsonapi-light`
 
 Load `js-data-jsonapi-light.js` last.
 
 ```js
 import { DataStore } from 'js-data'
-import { JsonApiAdapter } from 'js-data-jsonapi-light'
+// or `var DataStore = JSDate.DataStore`
 
-// Or :
-// const store = new JSData.DataStore();
+import { JsonApiAdapter } from 'js-data-jsonapi-light'
+// or `var JsonApiAdapter = JSDataJsonApiLight.JsonApiAdapter`
+
+// Initialize our Store
 const store = new DataStore();
 
-// Or :
-// const jsonApiAdapter = new JSDataJsonApiLight.JsonApiAdapter({
+// Initialize our Adapter
 const jsonApiAdapter = new JsonApiAdapter({
   // Store needs to be given to the adapter
   store: store
@@ -33,13 +54,64 @@ const jsonApiAdapter = new JsonApiAdapter({
   // If a deserialization option is given, it will be run after JSONApi deserialization has occured
 });
 
+// Register the Adapter as the default one in the store
 store.registerAdapter('jsonApi', jsonApiAdapter, { default: true })
 ```
 
-## Advanced support
+## Exemples
+
+### Use case
+
+* You can find examples of Mapper Definitions in [test/resources](https://github.com/Wikodit/js-data-jsonapi-light/tree/develop/test/resources).
+* Fake JsonAPI responses corresponding to those mapper can be found in [test/api](https://github.com/Wikodit/js-data-jsonapi-light/tree/develop/test/api)
+* Bootstrap of JSData + JsonAPI could be found in [test/ds](https://github.com/Wikodit/js-data-jsonapi-light/tree/develop/test/ds.ts)
+* Exemple of use could be found in [test/unit](https://github.com/Wikodit/js-data-jsonapi-light/tree/develop/test/unit)
+
+### Define your mappers
+
+JSData works with mappers which define the communication part and the way your resources are linked together
+
+```
+const UserMapper = window.store.defineMapper('User',{
+  endpoint: 'users', // optional, it will default to `User`
+  relations: {
+    hasOne: {
+      'UserProfile': {
+        localField: 'profile',
+        foreignKey: 'userId'
+      }
+    },
+    hasMany: {
+      'Article': {
+        localField: 'articles',
+        foreignKey: 'authorId'
+      }
+    },
+    belongsTo: {
+      'UserGroup': {
+        localField: 'group',
+        localKey: 'groupId'
+      }
+    }
+  }
+})
+```
+
+### Fetch your data
+
+```
+UserMapper.findAll({ include: 'profile' }).then((records) => {
+  console.log(records);
+})
+```
+
+Once some records has been loaded they are also cached in the DataStore, you can access them synchronously with :
+```
+records = store.getAll('User')
+```
 
 
-### JSONApi Meta
+### Get JSONApi Meta
 
 To retrieve JSONApi Meta on every call :
 
@@ -51,7 +123,6 @@ store.findAll('User', {}, {
   console.log(response.meta); // Return the JSONApi Metas
 })
 ```
-
 
 ## Development Status
 

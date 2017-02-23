@@ -1,6 +1,8 @@
 test:
   pre:
     - npm install -g karma-cli
+  post:
+    - bash <(curl -s https://codecov.io/bash)
 machine:
   node:
     version: 6.1.0
