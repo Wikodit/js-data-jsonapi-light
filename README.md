@@ -6,9 +6,9 @@
 [npmL]: https://www.npmjs.org/package/js-data-json-light
 [issuesB]: https://img.shields.io/github/issues/Wikodit/js-data-jsonapi-light.svg
 [issuesL]: https://github.com/Wikodit/js-data-jsonapi-light/issues
-[circleciB]: https://img.shields.io/circleci/project/Wikodit/js-data-jsonapi-light/develop.svg?style=flat&label=build%20develop
+[circleciB]: https://img.shields.io/circleci/project/Wikodit/js-data-jsonapi-light/develop.svg?style=flat&label=develop
 [circleciL]: https://circleci.com/gh/Wikodit/js-data-jsonapi-light/tree/develop
-[circleciMB]: https://img.shields.io/circleci/project/Wikodit/js-data-jsonapi-light/master.svg?style=flat&label=build%20master
+[circleciMB]: https://img.shields.io/circleci/project/Wikodit/js-data-jsonapi-light/master.svg?style=flat&label=master
 [circleciML]: https://circleci.com/gh/Wikodit/js-data-jsonapi-light/tree/master
 [codecovB]: https://img.shields.io/codecov/c/github/Wikodit/js-data-jsonapi-light/develop.svg?style=flat&label=coverage
 [codecovL]: https://codecov.io/gh/Wikodit/js-data-jsonapi-light

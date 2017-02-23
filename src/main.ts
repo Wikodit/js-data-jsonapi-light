@@ -45,33 +45,8 @@ export class JsonApiAdapter extends HttpAdapter{
 
     selfWrapper.self = this;
     this.store = options.store;
-
-    // this.overrideStore();
   }
-
-  private overrideStore () {
-    const
-      _addToCache = this.store.addToCache,
-      _wrap = this.store.mapperDefaults.wrap
-
-    // this.store.addToCache = function(name:string, data:any, opts:Object) {
-    //   if ((<any>opts).raw){
-    //   console.warn(data, opts)
-    //   }
-    //   return _addToCache.apply(this, arguments);
-    // }
-    this.store.mapperDefaults.wrap = function(data:any, opts:Object) {
-      let result:any = (<any>Mapper.prototype).wrap.call(this, data, opts);
-
-      if ((<any>opts).raw){
-        data.result = result;
-        return data;
-      }
-
-      return result;
-    }
-  }
-
+  
   private warn(...args:any[]) {
     console.warn.apply(null, arguments);
     return;

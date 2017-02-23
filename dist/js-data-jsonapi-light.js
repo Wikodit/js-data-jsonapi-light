@@ -137,17 +137,6 @@ var JsonApiAdapter = (function (_super) {
         _this.store = options.store;
         return _this;
     }
-    JsonApiAdapter.prototype.overrideStore = function () {
-        var _addToCache = this.store.addToCache, _wrap = this.store.mapperDefaults.wrap;
-        this.store.mapperDefaults.wrap = function (data, opts) {
-            var result = js_data_1.Mapper.prototype.wrap.call(this, data, opts);
-            if (opts.raw) {
-                data.result = result;
-                return data;
-            }
-            return result;
-        };
-    };
     JsonApiAdapter.prototype.warn = function () {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
