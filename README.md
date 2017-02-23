@@ -169,19 +169,17 @@ store.findAll('User', {}, {
 
 ## Development Status
 
-### Version
-
-1.0.0-alpha.2
-
 ### What is done
 
 * Deserialization, supporting hasMany, hasOne, belongsTo relationships
 * Meta handling
+* Serialization
+* Custom hooks
 
 ### What is remaining
 
-* Serialization
 * ManyToMany
+* PATCH instead of PUT
 * Error handling
 
 ## License
