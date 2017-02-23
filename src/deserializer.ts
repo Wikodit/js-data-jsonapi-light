@@ -1,5 +1,6 @@
 import { mapperCacheRelationByField } from './utils';
 import { utils, Mapper } from 'js-data';
+import { WARNING } from './strings'
 
 export function wrapDeserialize(self:any):any{
   return function(mapper:any, res:any, opts:any){
@@ -43,7 +44,7 @@ export function jsonApiDeserialize(mapper:Mapper, res:any, opts:any){
   // the correct key/id
   for (let type in itemsIndexed) {
     let resource:any = this.store.getMapper(type);
-    if (!resource) { this.warn(`Can\'t find resource '${type}'`); continue; }
+    if (!resource) { this.warn(WARNING.NO_RESSOURCE(type)); continue; }
 
     // Just cache a pointer to relations for the Resource
     mapperCacheRelationByField(resource);
@@ -63,7 +64,7 @@ export function jsonApiDeserialize(mapper:Mapper, res:any, opts:any){
         if (relation.type === 'belongsTo' || relation.type === 'hasOne') {
           let link:any = item.relationships[relationField].data
           if (!utils.isObject(link)) {
-            this.warn('Wrong relation somewhere, object expected', relation);
+            this.warn(WARNING.WRONG_RELATION_OBJECT_EXPECTED, relation);
             continue;
           }
 
@@ -74,7 +75,7 @@ export function jsonApiDeserialize(mapper:Mapper, res:any, opts:any){
         } else if (relation.type === 'hasMany') {
           let links:any = item.relationships[relationField].data
           if (!utils.isArray(links)) {
-            this.warn('Wrong relation somewhere, array expected');
+            this.warn(WARNING.WRONG_RELATION_ARRAY_EXPECTED);
             continue;
           }
 
@@ -86,7 +87,7 @@ export function jsonApiDeserialize(mapper:Mapper, res:any, opts:any){
               item.attributes[relation.localField].push(itemLinkd.attributes);
             }
           }
-        } else { this.warn('Unknown relation'); continue; }
+        } else { this.warn(WARNING.RELATION_UNKNOWN); continue; }
       }
     }
   }

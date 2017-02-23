@@ -73,10 +73,6 @@ export class JsonApiAdapter extends HttpAdapter{
     }).then(this.handleResponse(opts))
   }
 
-  public createMany(mapper: Mapper, props: any, opts?: any): Promise<any> {
-    return Promise.reject(new Error('JSONApi doesn\'t support creating in batch.'));
-  }
-
   public update(mapper: Mapper, id: any, props: any, opts?: any): Promise<any> {
     // Ensure id is properly set
     props[mapper.idAttribute] = id;
@@ -86,21 +82,26 @@ export class JsonApiAdapter extends HttpAdapter{
     }).then(this.handleResponse(opts))
   }
 
-  public updateAll(mapper: Mapper, props: any, query: any, opts?: any): Promise<any> {
-    return Promise.reject(new Error('JSONApi doesn\'t support updating in batch.'));
-  }
-
-  public updateMany(mapper: Mapper, records: any, opts?: any): Promise<any> {
-    return Promise.reject(new Error('JSONApi doesn\'t support updating in batch.'));
-  }
-
   public destroy(mapper: Mapper, id: string | number, opts?: any): Promise<any> {
     return this.handleBeforeLifecycle(opts).then(() => {
       return HttpAdapter.prototype.destroy.call(this, mapper, id, opts);
     }).then(this.handleResponse(opts))
   }
 
+  // Unsupported methods
+  public createMany(mapper: Mapper, props: any, opts?: any): Promise<any> {
+    return Promise.reject(new Error(ERROR.NO_BATCH_CREATE));
+  }
+
+  public updateAll(mapper: Mapper, props: any, query: any, opts?: any): Promise<any> {
+    return Promise.reject(new Error(ERROR.NO_BATCH_UPDATE));
+  }
+
+  public updateMany(mapper: Mapper, records: any, opts?: any): Promise<any> {
+    return Promise.reject(new Error(ERROR.NO_BATCH_UPDATE));
+  }
+
   public destroyAll(mapper: Mapper, query: any, opts?: any): Promise<any> {
-    return Promise.reject(new Error('JSONApi doesn\'t support destroying in batch.'));
+    return Promise.reject(new Error(ERROR.NO_BATCH_DESTROY));
   }
 }
