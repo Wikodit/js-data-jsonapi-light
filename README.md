@@ -21,6 +21,8 @@ This adapter just add a light serialize and deserialize layer over DSHttpAdapter
 
 ## Compatibility
 
+| package      | requirement   |
+| ------------ | ------------- |
 | js-data      | >= 3.0.0-rc.7 |
 | js-data-http | >= 3.0.0-rc.2 |
 
