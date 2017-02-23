@@ -2,7 +2,7 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { store } from '../../ds';
 import * as Resources from '../../resources';
-import { respondJson } from './lib';
+import { respondJson } from '../lib';
 
 describe('DESTROY', () => {
   let requests:Array<any> = [];

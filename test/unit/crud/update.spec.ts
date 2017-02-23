@@ -2,7 +2,7 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { store } from '../../ds';
 import * as Resources from '../../resources';
-import { respondJson } from './lib';
+import { respondJson } from '../lib';
 
 describe('UPDATE', () => {
   let requests:Array<any> = [];
@@ -116,7 +116,7 @@ describe('UPDATE', () => {
         expect(reqPut.body.data.relationships.author).to.deep.equal({
           data: { type: "User", id: UPDATE_PARAMS.authorId }
         });
-
+        
         expect(data).to.be.an('object')
         expect(data.id).to.equal(ID)
         expect(data.title).to.equal(UPDATE_PARAMS.title)

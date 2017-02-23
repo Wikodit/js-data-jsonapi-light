@@ -115,26 +115,33 @@ var JsonApiAdapter = (function (_super) {
         if (!options.store) {
             throw new Error('JsonApiAdapter needs to be given a store option.');
         }
-        if (options.serialize) {
-            options.beforeSerialize = options.serialize;
-        }
-        if (options.deserialize) {
-            options.afterDeserialize = options.deserialize;
-        }
         var selfWrapper = {};
         options.serialize = function (wrapper) {
-            return function () {
-                return wrapper.self.jsonApiSerialize.apply(wrapper.self, arguments);
+            return function (mapper, data, opts) {
+                var beforeSerialize = opts.beforeSerialize || mapper.beforeSerialize || wrapper.self.options.beforeSerialize, afterSerialize = opts.afterSerialize || mapper.afterSerialize || wrapper.self.options.afterSerialize;
+                if (beforeSerialize)
+                    data = beforeSerialize.call(wrapper.self, mapper, data, opts);
+                data = wrapper.self.jsonApiSerialize.call(wrapper.self, mapper, data, opts);
+                if (afterSerialize)
+                    data = afterSerialize.call(wrapper.self, mapper, data, opts);
+                return data;
             };
         }(selfWrapper);
         options.deserialize = function (wrapper) {
-            return function () {
-                return wrapper.self.jsonApiDeserialize.apply(wrapper.self, arguments);
+            return function (mapper, res, opts) {
+                var beforeDeserialize = opts.beforeDeserialize || mapper.beforeDeserialize || wrapper.self.options.beforeDeserialize, afterDeserialize = opts.afterDeserialize || mapper.afterDeserialize || wrapper.self.options.afterDeserialize;
+                if (beforeDeserialize)
+                    res = beforeDeserialize.call(wrapper.self, mapper, res, opts);
+                res = wrapper.self.jsonApiDeserialize.call(wrapper.self, mapper, res, opts);
+                if (afterDeserialize)
+                    res = afterDeserialize.call(wrapper.self, mapper, res, opts);
+                return res;
             };
         }(selfWrapper);
         _this = _super.call(this, options) || this;
         selfWrapper.self = _this;
         _this.store = options.store;
+        _this.options = options;
         return _this;
     }
     JsonApiAdapter.prototype.warn = function () {
@@ -289,21 +296,39 @@ var JsonApiAdapter = (function (_super) {
             return response;
         };
     };
+    JsonApiAdapter.prototype.handleBeforeLifecycle = function (opts) {
+        if (opts && (opts.serialize || opts.deserialize)) {
+            return Promise.reject(new Error('You can not use deserialize and serialize options with this adapter, you should instead provide an afterSerialize, a beforeSerialize, an afterDeserialize or a beforeDeserialize.'));
+        }
+        return Promise.resolve();
+    };
     JsonApiAdapter.prototype.find = function (mapper, id, opts) {
-        return _super.prototype.find.call(this, mapper, id, opts).then(this.handleResponse(opts));
+        var _this = this;
+        return this.handleBeforeLifecycle(opts).then(function () {
+            return js_data_http_1.HttpAdapter.prototype.find.call(_this, mapper, id, opts);
+        }).then(this.handleResponse(opts));
     };
     JsonApiAdapter.prototype.findAll = function (mapper, query, opts) {
-        return _super.prototype.findAll.call(this, mapper, query, opts).then(this.handleResponse(opts));
+        var _this = this;
+        return this.handleBeforeLifecycle(opts).then(function () {
+            return js_data_http_1.HttpAdapter.prototype.findAll.call(_this, mapper, query, opts);
+        }).then(this.handleResponse(opts));
     };
     JsonApiAdapter.prototype.create = function (mapper, props, opts) {
-        return _super.prototype.create.call(this, mapper, props, opts).then(this.handleResponse(opts));
+        var _this = this;
+        return this.handleBeforeLifecycle(opts).then(function () {
+            return js_data_http_1.HttpAdapter.prototype.create.call(_this, mapper, props, opts);
+        }).then(this.handleResponse(opts));
     };
     JsonApiAdapter.prototype.createMany = function (mapper, props, opts) {
         return Promise.reject(new Error('JSONApi doesn\'t support creating in batch.'));
     };
     JsonApiAdapter.prototype.update = function (mapper, id, props, opts) {
+        var _this = this;
         props[mapper.idAttribute] = id;
-        return _super.prototype.update.call(this, mapper, id, props, opts).then(this.handleResponse(opts));
+        return this.handleBeforeLifecycle(opts).then(function () {
+            return js_data_http_1.HttpAdapter.prototype.update.call(_this, mapper, id, props, opts);
+        }).then(this.handleResponse(opts));
     };
     JsonApiAdapter.prototype.updateAll = function (mapper, props, query, opts) {
         return Promise.reject(new Error('JSONApi doesn\'t support updating in batch.'));
@@ -312,7 +337,10 @@ var JsonApiAdapter = (function (_super) {
         return Promise.reject(new Error('JSONApi doesn\'t support updating in batch.'));
     };
     JsonApiAdapter.prototype.destroy = function (mapper, id, opts) {
-        return _super.prototype.destroy.call(this, mapper, id, opts).then(this.handleResponse(opts));
+        var _this = this;
+        return this.handleBeforeLifecycle(opts).then(function () {
+            return js_data_http_1.HttpAdapter.prototype.destroy.call(_this, mapper, id, opts);
+        }).then(this.handleResponse(opts));
     };
     JsonApiAdapter.prototype.destroyAll = function (mapper, query, opts) {
         return Promise.reject(new Error('JSONApi doesn\'t support destroying in batch.'));
