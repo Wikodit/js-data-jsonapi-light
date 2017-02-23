@@ -9,7 +9,7 @@ export function respondJson(route: string, content?: any, statusCode?: number): 
     reqPointer.headers = request.requestHeaders;
     reqPointer.url = request.url;
     reqPointer.method = request.method;
-
+    
     request.respond(
       statusCode || 200,
       { 'Content-Type': 'application/json' },

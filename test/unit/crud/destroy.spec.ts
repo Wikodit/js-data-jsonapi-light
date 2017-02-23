@@ -22,7 +22,7 @@ describe('DESTROY', () => {
     const
       MAPPER_NAME:string = 'Article',
       ID:string = '99633a09-9047-41bf-955f-4a8d72a38d58',
-      RESPONSE:any = {
+      FIND_RESPONSE:any = {
         data: {
           id: ID,
           type: MAPPER_NAME,
@@ -34,11 +34,11 @@ describe('DESTROY', () => {
       }
 
     let data:any = null;
-    let reqFind:any = null;
+    let reqGet:any = null;
     let reqDelete:any = null;
     
     beforeEach(() => {
-      reqFind = server.answer(`GET articles/${ID}`, RESPONSE);
+      reqGet = server.answer(`GET articles/${ID}`, FIND_RESPONSE);
       reqDelete = server.answer(`DELETE articles/${ID}`, {});
 
       return Promise.resolve().then(() => {
@@ -53,7 +53,7 @@ describe('DESTROY', () => {
     })
 
     afterEach(() => {
-      data = reqFind = reqDelete = null;
+      data = reqGet = reqDelete = null;
     })
 
     it('should destroy an object', () => {
