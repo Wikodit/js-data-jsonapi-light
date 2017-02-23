@@ -112,6 +112,47 @@ Once some records has been loaded they are also cached in the DataStore, you can
 records = store.getAll('User')
 ```
 
+### Hooks
+
+Sometime you want to be able to do some custom additional serialization / deserialization.
+
+#### By using the adapter
+
+```js
+  const jsonApiAdapter = new JsonApiAdapter({
+    store: store,
+    beforeDeserialize: function(mapper, data, opts) { return data; }
+    afterDeserialize: function(mapper, data, opts) { return data; }
+    beforeSerialize: function(mapper, data, opts) { return data; }
+    afterSerialize: function(mapper, data, opts) { return data; }
+  });
+```
+
+#### By using the mapper
+
+```js
+  const UserMapper = store.defineMapper('User', {
+    beforeDeserialize: function(mapper, data, opts) { return data; }
+    afterDeserialize: function(mapper, data, opts) { return data; }
+    beforeSerialize: function(mapper, data, opts) { return data; }
+    afterSerialize: function(mapper, data, opts) { return data; }
+  });
+```
+
+#### When doing requests
+
+```js
+  store.findAll('User', {}, {
+    beforeDeserialize: function(mapper, data, opts) { return data; }
+    afterDeserialize: function(mapper, data, opts) { return data; }
+  });
+
+  store.update('User', {}, {
+    beforeSerialize: function(mapper, data, opts) { return data; }
+    afterSerialize: function(mapper, data, opts) { return data; }
+  });
+```
+
 
 ### Get JSONApi Meta
 
