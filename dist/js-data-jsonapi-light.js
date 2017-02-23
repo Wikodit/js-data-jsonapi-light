@@ -7,7 +7,7 @@
 		exports["JSDataJsonApiLight"] = factory(require("js-data"), require("js-data-http"));
 	else
 		root["JSDataJsonApiLight"] = factory(root["JSData"], root["JSDataHttp"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_0__, __WEBPACK_EXTERNAL_MODULE_1__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_1__, __WEBPACK_EXTERNAL_MODULE_5__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -73,14 +73,38 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_0__;
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function mapperCacheRelationByField(mapper) {
+    if (!mapper.relationByField || !mapper.relationByFieldId) {
+        mapper.relationByField = {};
+        mapper.relationByFieldId = {};
+        for (var i = 0, l = (mapper.relationList || []).length; i < l; i++) {
+            var field = mapper.relationList[i].localField;
+            var key = mapper.relationList[i].localKey;
+            if (key) {
+                mapper.relationByFieldId[key] = mapper.relationList[i];
+            }
+            if (field) {
+                mapper.relationByField[field] = mapper.relationList[i];
+            }
+            else {
+                this.warn('localField missing');
+                continue;
+            }
+        }
+    }
+}
+exports.mapperCacheRelationByField = mapperCacheRelationByField;
+
 
 /***/ }),
 /* 1 */
@@ -105,43 +129,27 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var js_data_1 = __webpack_require__(0);
-var js_data_http_1 = __webpack_require__(1);
+var js_data_1 = __webpack_require__(1);
+var js_data_http_1 = __webpack_require__(5);
+var deserializer_1 = __webpack_require__(3);
+var serializer_1 = __webpack_require__(4);
+var strings_1 = __webpack_require__(7);
 var JsonApiAdapter = (function (_super) {
     __extends(JsonApiAdapter, _super);
     function JsonApiAdapter(options) {
         var _this = this;
         options = js_data_1.utils.deepMixIn({}, options || {});
         if (!options.store) {
-            throw new Error('JsonApiAdapter needs to be given a store option.');
+            throw new Error(strings_1.ERROR.FORCE_STORE_OPTION);
         }
-        var selfWrapper = {};
-        options.serialize = function (wrapper) {
-            return function (mapper, data, opts) {
-                var beforeSerialize = opts.beforeSerialize || mapper.beforeSerialize || wrapper.self.options.beforeSerialize, afterSerialize = opts.afterSerialize || mapper.afterSerialize || wrapper.self.options.afterSerialize;
-                if (beforeSerialize)
-                    data = beforeSerialize.call(wrapper.self, mapper, data, opts);
-                data = wrapper.self.jsonApiSerialize.call(wrapper.self, mapper, data, opts);
-                if (afterSerialize)
-                    data = afterSerialize.call(wrapper.self, mapper, data, opts);
-                return data;
-            };
-        }(selfWrapper);
-        options.deserialize = function (wrapper) {
-            return function (mapper, res, opts) {
-                var beforeDeserialize = opts.beforeDeserialize || mapper.beforeDeserialize || wrapper.self.options.beforeDeserialize, afterDeserialize = opts.afterDeserialize || mapper.afterDeserialize || wrapper.self.options.afterDeserialize;
-                if (beforeDeserialize)
-                    res = beforeDeserialize.call(wrapper.self, mapper, res, opts);
-                res = wrapper.self.jsonApiDeserialize.call(wrapper.self, mapper, res, opts);
-                if (afterDeserialize)
-                    res = afterDeserialize.call(wrapper.self, mapper, res, opts);
-                return res;
-            };
-        }(selfWrapper);
+        if (options.serialize || options.deserialize) {
+            throw new Error(strings_1.ERROR.PREVENT_SERIALIZE_DESERIALIZE_OPTIONS);
+        }
         _this = _super.call(this, options) || this;
-        selfWrapper.self = _this;
         _this.store = options.store;
         _this.options = options;
+        _this.serialize = serializer_1.wrapSerialize(_this);
+        _this.deserialize = deserializer_1.wrapDeserialize(_this);
         return _this;
     }
     JsonApiAdapter.prototype.warn = function () {
@@ -151,141 +159,6 @@ var JsonApiAdapter = (function (_super) {
         }
         console.warn.apply(null, arguments);
         return;
-    };
-    JsonApiAdapter.prototype.jsonApiSerialize = function (mapper, data, opts) {
-        var id = data[mapper.idAttribute];
-        delete data[mapper.idAttribute];
-        this.mapperCacheRelationByField(mapper);
-        var relationships = {};
-        for (var key in data) {
-            var relation = mapper.relationByFieldId[key];
-            if (relation) {
-                relationships[relation.localField] = {
-                    data: {
-                        type: relation.relation,
-                        id: data[key]
-                    }
-                };
-                delete data[key];
-            }
-        }
-        var output = {
-            data: {
-                type: mapper.name,
-                attributes: data
-            }
-        };
-        if (id)
-            output.data.id = id;
-        if (Object.keys(relationships))
-            output.data.relationships = relationships;
-        return output;
-    };
-    JsonApiAdapter.prototype.jsonApiDeserialize = function (mapper, res, opts) {
-        if (!res.data || !res.data.data)
-            return;
-        var collectionReceived = js_data_1.utils.isArray(res.data.data);
-        var itemsIndexed = {};
-        var itemCollection = [].concat(res.data.included || [])
-            .concat(res.data.data || []);
-        var i = itemCollection.length;
-        while (i--) {
-            var item = itemCollection[i];
-            if (!item.type || !item.id) {
-                itemCollection.splice(i, 1);
-                continue;
-            }
-            if (!itemsIndexed[item.type])
-                itemsIndexed[item.type] = {};
-            itemsIndexed[item.type][item.id] = item;
-        }
-        for (var type in itemsIndexed) {
-            var resource = this.store.getMapper(type);
-            if (!resource) {
-                this.warn("Can't find resource '" + type + "'");
-                continue;
-            }
-            this.mapperCacheRelationByField(resource);
-            for (var id in itemsIndexed[type]) {
-                var item = itemsIndexed[type][id];
-                item.attributes[resource.idAttribute] = id;
-                if (!item.relationships || !Object.keys(item.relationships))
-                    continue;
-                for (var relationField in (item.relationships || {})) {
-                    var relation = resource.relationByField[relationField];
-                    if (!relation || !item.relationships[relationField] || !item.relationships[relationField].data) {
-                        continue;
-                    }
-                    if (relation.type === 'belongsTo' || relation.type === 'hasOne') {
-                        var link = item.relationships[relationField].data;
-                        if (!js_data_1.utils.isObject(link)) {
-                            this.warn('Wrong relation somewhere, object expected', relation);
-                            continue;
-                        }
-                        if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
-                            var itemLinked = itemsIndexed[link.type][link.id];
-                            item.attributes[relation.localField] = itemLinked.attributes;
-                        }
-                    }
-                    else if (relation.type === 'hasMany') {
-                        var links = item.relationships[relationField].data;
-                        if (!js_data_1.utils.isArray(links)) {
-                            this.warn('Wrong relation somewhere, array expected');
-                            continue;
-                        }
-                        item.attributes[relation.localField] = [];
-                        for (var i_1 = 0, l = links.length; i_1 < l; i_1++) {
-                            var link = links[i_1];
-                            if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
-                                var itemLinkd = itemsIndexed[link.type][link.id];
-                                item.attributes[relation.localField].push(itemLinkd.attributes);
-                            }
-                        }
-                    }
-                    else {
-                        this.warn('Unknown relation');
-                        continue;
-                    }
-                }
-            }
-        }
-        var outputDatas;
-        if (!collectionReceived) {
-            outputDatas = res.data.data.attributes;
-        }
-        else {
-            outputDatas = [];
-            for (var i_2 = 0, l = res.data.data.length; i_2 < l; i_2++) {
-                outputDatas.push(res.data.data[i_2].attributes);
-            }
-        }
-        if (!opts.raw) {
-            return outputDatas;
-        }
-        return {
-            result: outputDatas,
-            meta: res.data.meta
-        };
-    };
-    JsonApiAdapter.prototype.mapperCacheRelationByField = function (mapper) {
-        if (!mapper.relationByField || !mapper.relationByFieldId) {
-            mapper.relationByField = {};
-            mapper.relationByFieldId = {};
-            for (var i = 0, l = (mapper.relationList || []).length; i < l; i++) {
-                var field = mapper.relationList[i].localField;
-                var key = mapper.relationList[i].localKey;
-                if (key) {
-                    mapper.relationByFieldId[key] = mapper.relationList[i];
-                }
-                if (field) {
-                    mapper.relationByField[field] = mapper.relationList[i];
-                }
-                else {
-                    this.warn('localField missing');
-                    continue;
-                }
-            }
-        }
     };
     JsonApiAdapter.prototype.handleResponse = function (opts) {
         return function (response) {
@@ -298,7 +171,7 @@ var JsonApiAdapter = (function (_super) {
     };
     JsonApiAdapter.prototype.handleBeforeLifecycle = function (opts) {
         if (opts && (opts.serialize || opts.deserialize)) {
-            return Promise.reject(new Error('You can not use deserialize and serialize options with this adapter, you should instead provide an afterSerialize, a beforeSerialize, an afterDeserialize or a beforeDeserialize.'));
+            return Promise.reject(new Error(strings_1.ERROR.PREVENT_SERIALIZE_DESERIALIZE_OPTIONS));
         }
         return Promise.resolve();
     };
@@ -348,6 +221,200 @@ var JsonApiAdapter = (function (_super) {
     return JsonApiAdapter;
 }(js_data_http_1.HttpAdapter));
 exports.JsonApiAdapter = JsonApiAdapter;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var utils_1 = __webpack_require__(0);
+var js_data_1 = __webpack_require__(1);
+function wrapDeserialize(self) {
+    return function (mapper, res, opts) {
+        var beforeDeserialize = opts.beforeDeserialize || mapper.beforeDeserialize || self.options.beforeDeserialize, afterDeserialize = opts.afterDeserialize || mapper.afterDeserialize || self.options.afterDeserialize;
+        if (beforeDeserialize)
+            res = beforeDeserialize.call(self, mapper, res, opts);
+        res = jsonApiDeserialize.call(self, mapper, res, opts);
+        if (afterDeserialize)
+            res = afterDeserialize.call(self, mapper, res, opts);
+        return res;
+    };
+}
+exports.wrapDeserialize = wrapDeserialize;
+function jsonApiDeserialize(mapper, res, opts) {
+    if (!res.data || !res.data.data)
+        return;
+    var collectionReceived = js_data_1.utils.isArray(res.data.data);
+    var itemsIndexed = {};
+    var itemCollection = [].concat(res.data.included || [])
+        .concat(res.data.data || []);
+    var i = itemCollection.length;
+    while (i--) {
+        var item = itemCollection[i];
+        if (!item.type || !item.id) {
+            itemCollection.splice(i, 1);
+            continue;
+        }
+        if (!itemsIndexed[item.type])
+            itemsIndexed[item.type] = {};
+        itemsIndexed[item.type][item.id] = item;
+    }
+    for (var type in itemsIndexed) {
+        var resource = this.store.getMapper(type);
+        if (!resource) {
+            this.warn("Can't find resource '" + type + "'");
+            continue;
+        }
+        utils_1.mapperCacheRelationByField(resource);
+        for (var id in itemsIndexed[type]) {
+            var item = itemsIndexed[type][id];
+            item.attributes[resource.idAttribute] = id;
+            if (!item.relationships || !Object.keys(item.relationships))
+                continue;
+            for (var relationField in (item.relationships || {})) {
+                var relation = resource.relationByField[relationField];
+                if (!relation || !item.relationships[relationField] || !item.relationships[relationField].data) {
+                    continue;
+                }
+                if (relation.type === 'belongsTo' || relation.type === 'hasOne') {
+                    var link = item.relationships[relationField].data;
+                    if (!js_data_1.utils.isObject(link)) {
+                        this.warn('Wrong relation somewhere, object expected', relation);
+                        continue;
+                    }
+                    if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
+                        var itemLinked = itemsIndexed[link.type][link.id];
+                        item.attributes[relation.localField] = itemLinked.attributes;
+                    }
+                }
+                else if (relation.type === 'hasMany') {
+                    var links = item.relationships[relationField].data;
+                    if (!js_data_1.utils.isArray(links)) {
+                        this.warn('Wrong relation somewhere, array expected');
+                        continue;
+                    }
+                    item.attributes[relation.localField] = [];
+                    for (var i_1 = 0, l = links.length; i_1 < l; i_1++) {
+                        var link = links[i_1];
+                        if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
+                            var itemLinkd = itemsIndexed[link.type][link.id];
+                            item.attributes[relation.localField].push(itemLinkd.attributes);
+                        }
+                    }
+                }
+                else {
+                    this.warn('Unknown relation');
+                    continue;
+                }
+            }
+        }
+    }
+    var outputDatas;
+    if (!collectionReceived) {
+        outputDatas = res.data.data.attributes;
+    }
+    else {
+        outputDatas = [];
+        for (var i_2 = 0, l = res.data.data.length; i_2 < l; i_2++) {
+            outputDatas.push(res.data.data[i_2].attributes);
+        }
+    }
+    if (!opts.raw) {
+        return outputDatas;
+    }
+    return {
+        result: outputDatas,
+        meta: res.data.meta
+    };
+}
+exports.jsonApiDeserialize = jsonApiDeserialize;
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var utils_1 = __webpack_require__(0);
+function wrapSerialize(self) {
+    return function (mapper, data, opts) {
+        var beforeSerialize = opts.beforeSerialize || mapper.beforeSerialize || self.options.beforeSerialize, afterSerialize = opts.afterSerialize || mapper.afterSerialize || self.options.afterSerialize;
+        if (beforeSerialize)
+            data = beforeSerialize.call(self, mapper, data, opts);
+        data = jsonApiSerialize.call(self, mapper, data, opts);
+        if (afterSerialize)
+            data = afterSerialize.call(self, mapper, data, opts);
+        return data;
+    };
+}
+exports.wrapSerialize = wrapSerialize;
+function jsonApiSerialize(mapper, data, opts) {
+    var id = data[mapper.idAttribute];
+    delete data[mapper.idAttribute];
+    utils_1.mapperCacheRelationByField(mapper);
+    var relationships = {};
+    for (var key in data) {
+        var relation = mapper.relationByFieldId[key];
+        if (relation) {
+            relationships[relation.localField] = {
+                data: {
+                    type: relation.relation,
+                    id: data[key]
+                }
+            };
+            delete data[key];
+        }
+    }
+    var output = {
+        data: {
+            type: mapper.name,
+            attributes: data
+        }
+    };
+    if (id)
+        output.data.id = id;
+    if (Object.keys(relationships))
+        output.data.relationships = relationships;
+    return output;
+}
+exports.jsonApiSerialize = jsonApiSerialize;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_5__;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(__webpack_require__(2));
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ERROR = {
+    "FORCE_STORE_OPTION": "JsonApiAdapter needs to be given a store option.",
+    "PREVENT_SERIALIZE_DESERIALIZE_OPTIONS": "You can not use deserialize and serialize options with this adapter, you should instead provide an afterSerialize, a beforeSerialize, an afterDeserialize or a beforeDeserialize."
+};
 
 
 /***/ })
