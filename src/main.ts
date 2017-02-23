@@ -52,7 +52,7 @@ export class JsonApiAdapter extends HttpAdapter{
     return;
   }
   
-  public jsonApiSerialize(mapper:any, data:any){
+  public jsonApiSerialize(mapper:any, data:any, opts:any){
     let id:any = data[mapper.idAttribute];
     delete data[mapper.idAttribute];
     
@@ -235,7 +235,10 @@ export class JsonApiAdapter extends HttpAdapter{
   }
 
   public update(mapper: Mapper, id: any, props: any, opts?: any): Promise<any> {
-    return super.update(mapper, id, opts).then(this.handleResponse(opts))
+    // Ensure id is properly set
+    props[mapper.idAttribute] = id;
+
+    return super.update(mapper, id, props, opts).then(this.handleResponse(opts))
   }
 
   public updateAll(mapper: Mapper, props: any, query: any, opts?: any): Promise<any> {

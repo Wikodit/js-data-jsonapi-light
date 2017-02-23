@@ -145,9 +145,34 @@ var JsonApiAdapter = (function (_super) {
         console.warn.apply(null, arguments);
         return;
     };
-    JsonApiAdapter.prototype.jsonApiSerialize = function (resourceConfig, data) {
-        console.log(data);
-        return data;
+    JsonApiAdapter.prototype.jsonApiSerialize = function (mapper, data, opts) {
+        var id = data[mapper.idAttribute];
+        delete data[mapper.idAttribute];
+        this.mapperCacheRelationByField(mapper);
+        var relationships = {};
+        for (var key in data) {
+            var relation = mapper.relationByFieldId[key];
+            if (relation) {
+                relationships[relation.localField] = {
+                    data: {
+                        type: relation.relation,
+                        id: data[key]
+                    }
+                };
+                delete data[key];
+            }
+        }
+        var output = {
+            data: {
+                type: mapper.name,
+                attributes: data
+            }
+        };
+        if (id)
+            output.data.id = id;
+        if (Object.keys(relationships))
+            output.data.relationships = relationships;
+        return output;
     };
     JsonApiAdapter.prototype.jsonApiDeserialize = function (mapper, res, opts) {
         if (!res.data || !res.data.data)
@@ -173,24 +198,14 @@ var JsonApiAdapter = (function (_super) {
                 this.warn("Can't find resource '" + type + "'");
                 continue;
             }
-            if (!resource.relationByFields) {
-                resource.relationByFields = {};
-                for (var i_1 = 0, l = (resource.relationList || []).length; i_1 < l; i_1++) {
-                    var field = resource.relationList[i_1].localField;
-                    if (!field) {
-                        this.warn('localField missing');
-                        continue;
-                    }
-                    resource.relationByFields[field] = resource.relationList[i_1];
-                }
-            }
+            this.mapperCacheRelationByField(resource);
             for (var id in itemsIndexed[type]) {
                 var item = itemsIndexed[type][id];
                 item.attributes[resource.idAttribute] = id;
                 if (!item.relationships || !Object.keys(item.relationships))
                     continue;
                 for (var relationField in (item.relationships || {})) {
-                    var relation = resource.relationByFields[relationField];
+                    var relation = resource.relationByField[relationField];
                     if (!relation || !item.relationships[relationField] || !item.relationships[relationField].data) {
                         continue;
                     }
@@ -212,8 +227,8 @@ var JsonApiAdapter = (function (_super) {
                             continue;
                         }
                         item.attributes[relation.localField] = [];
-                        for (var i_2 = 0, l = links.length; i_2 < l; i_2++) {
-                            var link = links[i_2];
+                        for (var i_1 = 0, l = links.length; i_1 < l; i_1++) {
+                            var link = links[i_1];
                             if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
                                 var itemLinkd = itemsIndexed[link.type][link.id];
                                 item.attributes[relation.localField].push(itemLinkd.attributes);
@@ -233,8 +248,8 @@ var JsonApiAdapter = (function (_super) {
         }
         else {
             outputDatas = [];
-            for (var i_3 = 0, l = res.data.data.length; i_3 < l; i_3++) {
-                outputDatas.push(res.data.data[i_3].attributes);
+            for (var i_2 = 0, l = res.data.data.length; i_2 < l; i_2++) {
+                outputDatas.push(res.data.data[i_2].attributes);
             }
         }
         if (!opts.raw) {
@@ -244,6 +259,26 @@ var JsonApiAdapter = (function (_super) {
             result: outputDatas,
             meta: res.data.meta
         };
+    };
+    JsonApiAdapter.prototype.mapperCacheRelationByField = function (mapper) {
+        if (!mapper.relationByField || !mapper.relationByFieldId) {
+            mapper.relationByField = {};
+            mapper.relationByFieldId = {};
+            for (var i = 0, l = (mapper.relationList || []).length; i < l; i++) {
+                var field = mapper.relationList[i].localField;
+                var key = mapper.relationList[i].localKey;
+                if (key) {
+                    mapper.relationByFieldId[key] = mapper.relationList[i];
+                }
+                if (field) {
+                    mapper.relationByField[field] = mapper.relationList[i];
+                }
+                else {
+                    this.warn('localField missing');
+                    continue;
+                }
+            }
+        }
     };
     JsonApiAdapter.prototype.handleResponse = function (opts) {
         return function (response) {
@@ -264,22 +299,23 @@ var JsonApiAdapter = (function (_super) {
         return _super.prototype.create.call(this, mapper, props, opts).then(this.handleResponse(opts));
     };
     JsonApiAdapter.prototype.createMany = function (mapper, props, opts) {
-        return _super.prototype.createMany.call(this, mapper, props, opts).then(this.handleResponse(opts));
+        return Promise.reject(new Error('JSONApi doesn\'t support creating in batch.'));
     };
     JsonApiAdapter.prototype.update = function (mapper, id, props, opts) {
-        return _super.prototype.update.call(this, mapper, id, opts).then(this.handleResponse(opts));
+        props[mapper.idAttribute] = id;
+        return _super.prototype.update.call(this, mapper, id, props, opts).then(this.handleResponse(opts));
     };
     JsonApiAdapter.prototype.updateAll = function (mapper, props, query, opts) {
-        return _super.prototype.updateAll.call(this, mapper, query, opts).then(this.handleResponse(opts));
+        return Promise.reject(new Error('JSONApi doesn\'t support updating in batch.'));
     };
     JsonApiAdapter.prototype.updateMany = function (mapper, records, opts) {
-        return _super.prototype.updateMany.call(this, mapper, records, opts).then(this.handleResponse(opts));
+        return Promise.reject(new Error('JSONApi doesn\'t support updating in batch.'));
     };
     JsonApiAdapter.prototype.destroy = function (mapper, id, opts) {
         return _super.prototype.destroy.call(this, mapper, id, opts).then(this.handleResponse(opts));
     };
     JsonApiAdapter.prototype.destroyAll = function (mapper, query, opts) {
-        return _super.prototype.destroyAll.call(this, mapper, query, opts).then(this.handleResponse(opts));
+        return Promise.reject(new Error('JSONApi doesn\'t support destroying in batch.'));
     };
     return JsonApiAdapter;
 }(js_data_http_1.HttpAdapter));
