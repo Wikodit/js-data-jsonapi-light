@@ -55,7 +55,7 @@ export class JsonApiAdapter extends HttpAdapter{
   public jsonApiSerialize(resourceConfig:Mapper, data:any){
     // console.log('Serialize: ', resourceConfig, res);
     
-    console.log(data)
+    console.log('lol', data)
 
     return data;
   }
@@ -185,6 +185,7 @@ export class JsonApiAdapter extends HttpAdapter{
   }
 
   public create(mapper: Mapper, props: any, opts?: any): Promise<any> {
+    console.log('create')
     return super.create(mapper, props, opts).then(this.handleResponse(opts))
   }
 

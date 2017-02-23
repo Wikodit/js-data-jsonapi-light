@@ -46,8 +46,6 @@ describe('relations/hasMany', () => {
       expect(groups).to.be.an('array').and.to.have.lengthOf(GROUP_LENGTH);
     })
 
-    xit('above fetch should be switched back to = groups, but .users fail if we put that')
-
     it('should return the correct attributes (including the id)', () => {
       let [ group1, group2 ] = groups;
 

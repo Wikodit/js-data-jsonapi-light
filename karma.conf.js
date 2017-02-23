@@ -16,7 +16,7 @@ module.exports = function (config) {
       { pattern: 'test/api/**/*.json', watched: true, served: true, included: false }
     ],
     proxies: {
-      "/api/": "/base/test/api/"
+      "/api/": "/base/test/api"
     },
     exclude: [
     ],
