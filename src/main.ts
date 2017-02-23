@@ -190,7 +190,7 @@ export class JsonApiAdapter extends HttpAdapter{
   }
 
   public createMany(mapper: Mapper, props: any, opts?: any): Promise<any> {
-    return super.createMany(mapper, props, opts).then(this.handleResponse(opts))
+    return Promise.reject(new Error('JSONApi doesn\'t support creating in batch.'));
   }
 
   public update(mapper: Mapper, id: any, props: any, opts?: any): Promise<any> {
@@ -198,11 +198,11 @@ export class JsonApiAdapter extends HttpAdapter{
   }
 
   public updateAll(mapper: Mapper, props: any, query: any, opts?: any): Promise<any> {
-    return super.updateAll(mapper, query, opts).then(this.handleResponse(opts))
+    return Promise.reject(new Error('JSONApi doesn\'t support updating in batch.'));
   }
 
   public updateMany(mapper: Mapper, records: any, opts?: any): Promise<any> {
-    return super.updateMany(mapper, records, opts).then(this.handleResponse(opts))
+    return Promise.reject(new Error('JSONApi doesn\'t support updating in batch.'));
   }
 
   public destroy(mapper: Mapper, id: string | number, opts?: any): Promise<any> {
@@ -210,6 +210,6 @@ export class JsonApiAdapter extends HttpAdapter{
   }
 
   public destroyAll(mapper: Mapper, query: any, opts?: any): Promise<any> {
-    return super.destroyAll(mapper, query, opts).then(this.handleResponse(opts))
+    return Promise.reject(new Error('JSONApi doesn\'t support destroying in batch.'));
   }
 }

@@ -2,26 +2,7 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { store } from '../../ds';
 import * as Resources from '../../resources';
-
-function respondJson(route: string, content?: any, statusCode?: number): any {
-  let [method, endpoint] = route.split(' ')
-  let reqPointer: any = {};
-
-  this.respondWith(method, `api/${endpoint}.json`, function(request: any) {
-    let body = null;
-    try { body = JSON.parse(request.requestBody); } catch (e) {}
-    reqPointer.body = body;
-    reqPointer.headers = request.requestHeaders;
-
-    request.respond(
-      statusCode || 200,
-      { 'Content-Type': 'application/json' },
-      JSON.stringify(content || null)
-    );
-  });
-
-  return reqPointer;
-}
+import { respondJson } from './lib';
 
 describe('CREATE', () => {
   let requests:Array<any> = [];
@@ -95,8 +76,6 @@ describe('CREATE', () => {
       });
     });
 
-    it('the response')
-
     it('the record should be injected in the datastore', () => {
       let articles:Array<any> = store.getAll('Article');
       expect(articles).to.have.lengthOf(1);
@@ -104,5 +83,15 @@ describe('CREATE', () => {
       expect(articles[0].title).to.equal(RECORD.title);
       expect(articles[0].content).to.equal(RECORD.content);
     });
+  })
+
+  describe('when use of unsupported methods', () => {
+    it('should throw an error when using createMany', () => {
+      return store.createMany('Article', [{},{}]).then(() => {
+        throw new Error('fail')
+      }).catch((err) => {
+        expect(err.message).to.equal('JSONApi doesn\'t support creating in batch.');
+      });
+    })
   })
 });
