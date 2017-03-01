@@ -6,7 +6,6 @@ import { jsonApiSerialize, wrapSerialize } from './serializer';
 import { ERROR } from './strings';
 
 export class JsonApiAdapter extends HttpAdapter{
-  private store: DataStore;
   private options: any;
 
   constructor(options?:any) {
@@ -14,17 +13,12 @@ export class JsonApiAdapter extends HttpAdapter{
       // Some default
     }, options || {})
 
-    if (!options.store) {
-      throw new Error(ERROR.FORCE_STORE_OPTION)
-    }
-
     if (options.serialize || options.deserialize) {
       throw new Error(ERROR.PREVENT_SERIALIZE_DESERIALIZE_OPTIONS)
     }
 
     super(options);
 
-    this.store = options.store;
     this.options = options;
 
     this.serialize = wrapSerialize(this);

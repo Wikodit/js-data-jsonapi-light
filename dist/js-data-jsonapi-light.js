@@ -7,7 +7,7 @@
 		exports["JSDataJsonApiLight"] = factory(require("js-data"), require("js-data-http"));
 	else
 		root["JSDataJsonApiLight"] = factory(root["JSData"], root["JSDataHttp"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_1__, __WEBPACK_EXTERNAL_MODULE_6__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_6__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -83,6 +83,28 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ERROR = {
+    "FORCE_STORE_OPTION": "JsonApiAdapter needs to be given a store option.",
+    "PREVENT_SERIALIZE_DESERIALIZE_OPTIONS": "You can not use deserialize and serialize options with this adapter, you should instead provide an afterSerialize, a beforeSerialize, an afterDeserialize or a beforeDeserialize.",
+    NO_BATCH_CREATE: 'JSONApi doesn\'t support creating in batch.',
+    NO_BATCH_UPDATE: 'JSONApi doesn\'t support updating in batch.',
+    NO_BATCH_DESTROY: 'JSONApi doesn\'t support destroying in batch.'
+};
+exports.WARNING = {
+    NO_RESSOURCE: function (type) { return "Can't find resource '" + type + "'"; },
+    RELATION_UNKNOWN: 'Unknown relation',
+    WRONG_RELATION_ARRAY_EXPECTED: 'Wrong relation somewhere, array expected',
+    WRONG_RELATION_OBJECT_EXPECTED: 'Wrong relation somewhere, object expected'
+};
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
 function mapperCacheRelationByField(mapper) {
     if (!mapper.relationByField || !mapper.relationByFieldId) {
         mapper.relationByField = {};
@@ -107,13 +129,13 @@ exports.mapperCacheRelationByField = mapperCacheRelationByField;
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
+module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -129,24 +151,20 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var js_data_1 = __webpack_require__(1);
+var js_data_1 = __webpack_require__(2);
 var js_data_http_1 = __webpack_require__(6);
-var deserializer_1 = __webpack_require__(3);
-var serializer_1 = __webpack_require__(4);
-var strings_1 = __webpack_require__(5);
+var deserializer_1 = __webpack_require__(4);
+var serializer_1 = __webpack_require__(5);
+var strings_1 = __webpack_require__(0);
 var JsonApiAdapter = (function (_super) {
     __extends(JsonApiAdapter, _super);
     function JsonApiAdapter(options) {
         var _this = this;
         options = js_data_1.utils.deepMixIn({}, options || {});
-        if (!options.store) {
-            throw new Error(strings_1.ERROR.FORCE_STORE_OPTION);
-        }
         if (options.serialize || options.deserialize) {
             throw new Error(strings_1.ERROR.PREVENT_SERIALIZE_DESERIALIZE_OPTIONS);
         }
         _this = _super.call(this, options) || this;
-        _this.store = options.store;
         _this.options = options;
         _this.serialize = serializer_1.wrapSerialize(_this);
         _this.deserialize = deserializer_1.wrapDeserialize(_this);
@@ -224,15 +242,15 @@ exports.JsonApiAdapter = JsonApiAdapter;
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var utils_1 = __webpack_require__(0);
-var js_data_1 = __webpack_require__(1);
-var strings_1 = __webpack_require__(5);
+var utils_1 = __webpack_require__(1);
+var js_data_1 = __webpack_require__(2);
+var strings_1 = __webpack_require__(0);
 function wrapDeserialize(self) {
     return function (mapper, res, opts) {
         var beforeDeserialize = opts.beforeDeserialize || mapper.beforeDeserialize || self.options.beforeDeserialize, afterDeserialize = opts.afterDeserialize || mapper.afterDeserialize || self.options.afterDeserialize;
@@ -248,6 +266,7 @@ exports.wrapDeserialize = wrapDeserialize;
 function jsonApiDeserialize(mapper, res, opts) {
     if (!res.data || !res.data.data)
         return;
+    var store = mapper.datastore;
     var collectionReceived = js_data_1.utils.isArray(res.data.data);
     var itemsIndexed = {};
     var itemCollection = [].concat(res.data.included || [])
@@ -264,7 +283,7 @@ function jsonApiDeserialize(mapper, res, opts) {
         itemsIndexed[item.type][item.id] = item;
     }
     for (var type in itemsIndexed) {
-        var resource = this.store.getMapper(type);
+        var resource = store.getMapper(type);
         if (!resource) {
             this.warn(strings_1.WARNING.NO_RESSOURCE(type));
             continue;
@@ -335,13 +354,13 @@ exports.jsonApiDeserialize = jsonApiDeserialize;
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var utils_1 = __webpack_require__(0);
+var utils_1 = __webpack_require__(1);
 function wrapSerialize(self) {
     return function (mapper, data, opts) {
         var beforeSerialize = opts.beforeSerialize || mapper.beforeSerialize || self.options.beforeSerialize, afterSerialize = opts.afterSerialize || mapper.afterSerialize || self.options.afterSerialize;
@@ -387,28 +406,6 @@ exports.jsonApiSerialize = jsonApiSerialize;
 
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ERROR = {
-    "FORCE_STORE_OPTION": "JsonApiAdapter needs to be given a store option.",
-    "PREVENT_SERIALIZE_DESERIALIZE_OPTIONS": "You can not use deserialize and serialize options with this adapter, you should instead provide an afterSerialize, a beforeSerialize, an afterDeserialize or a beforeDeserialize.",
-    NO_BATCH_CREATE: 'JSONApi doesn\'t support creating in batch.',
-    NO_BATCH_UPDATE: 'JSONApi doesn\'t support updating in batch.',
-    NO_BATCH_DESTROY: 'JSONApi doesn\'t support destroying in batch.'
-};
-exports.WARNING = {
-    NO_RESSOURCE: function (type) { return "Can't find resource '" + type + "'"; },
-    RELATION_UNKNOWN: 'Unknown relation',
-    WRONG_RELATION_ARRAY_EXPECTED: 'Wrong relation somewhere, array expected',
-    WRONG_RELATION_OBJECT_EXPECTED: 'Wrong relation somewhere, object expected'
-};
-
-
-/***/ }),
 /* 6 */
 /***/ (function(module, exports) {
 
@@ -424,7 +421,7 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(2));
+__export(__webpack_require__(3));
 
 
 /***/ })
