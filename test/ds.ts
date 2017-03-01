@@ -13,8 +13,7 @@ export const store = window.store
 
 const jsonApiAdapter = new JSDataJsonApiLight.JsonApiAdapter({
   suffix: '.json',
-  basePath: 'api',
-  store: store
+  basePath: 'api'
 });
 
 store.registerAdapter('jsonApi', jsonApiAdapter, { default: true })

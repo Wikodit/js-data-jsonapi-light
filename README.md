@@ -48,12 +48,8 @@ const store = new DataStore();
 
 // Initialize our Adapter
 const jsonApiAdapter = new JsonApiAdapter({
-  // Store needs to be given to the adapter
-  store: store
-
   // Same options as DSHttpAdapter
-  // If a serialization option is given, it will be run before JSONApi serialization has occured
-  // If a deserialization option is given, it will be run after JSONApi deserialization has occured
+  // However, you should use before/after deserialize/serialize instead of serialize/deserialize
 });
 
 // Register the Adapter as the default one in the store
@@ -120,7 +116,6 @@ Sometime you want to be able to do some custom additional serialization / deseri
 
 ```js
   const jsonApiAdapter = new JsonApiAdapter({
-    store: store,
     beforeDeserialize: function(mapper, data, opts) { return data; }
     afterDeserialize: function(mapper, data, opts) { return data; }
     beforeSerialize: function(mapper, data, opts) { return data; }

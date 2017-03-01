@@ -18,6 +18,8 @@ export function wrapDeserialize(self:any):any{
 export function jsonApiDeserialize(mapper:Mapper, res:any, opts:any){
   if (!res.data || !res.data.data) return;
 
+  const store = (<any>mapper).datastore;
+
   const collectionReceived = utils.isArray(res.data.data)
 
   // We store all possible items stores in the response in a Object[type][id]
@@ -43,7 +45,7 @@ export function jsonApiDeserialize(mapper:Mapper, res:any, opts:any){
   // Know we will check every possible relationships and try to affect them
   // the correct key/id
   for (let type in itemsIndexed) {
-    let resource:any = this.store.getMapper(type);
+    let resource:any = store.getMapper(type);
     if (!resource) { this.warn(WARNING.NO_RESSOURCE(type)); continue; }
 
     // Just cache a pointer to relations for the Resource
