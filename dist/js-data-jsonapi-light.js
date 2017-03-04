@@ -214,6 +214,13 @@ var JsonApiAdapter = (function (_super) {
     JsonApiAdapter.prototype.update = function (mapper, id, props, opts) {
         var _this = this;
         props[mapper.idAttribute] = id;
+        if (!opts.replace) {
+            opts.method = opts.method || 'patch';
+        }
+        var record = mapper.datastore.get(mapper.name, id);
+        if (record) {
+            console.info(record.changes());
+        }
         return this.handleBeforeLifecycle(opts).then(function () {
             return js_data_http_1.HttpAdapter.prototype.update.call(_this, mapper, id, props, opts);
         }).then(this.handleResponse(opts));
@@ -377,6 +384,12 @@ function jsonApiSerialize(mapper, data, opts) {
     var id = data[mapper.idAttribute];
     delete data[mapper.idAttribute];
     utils_1.mapperCacheRelationByField(mapper);
+    console.info(mapper.datastore.get(mapper.name, id));
+    console.info('CIH', opts.changes, id, mapper.changes(id));
+    if (opts.changes && id && mapper.changes(id)) {
+        var changes = mapper.changes(id);
+        console.info('changes', changes);
+    }
     var relationships = {};
     for (var key in data) {
         var relation = mapper.relationByFieldId[key];
@@ -398,8 +411,9 @@ function jsonApiSerialize(mapper, data, opts) {
     };
     if (id)
         output.data.id = id;
-    if (Object.keys(relationships))
+    if (Object.keys(relationships).length) {
         output.data.relationships = relationships;
+    }
     return output;
 }
 exports.jsonApiSerialize = jsonApiSerialize;

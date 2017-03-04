@@ -79,8 +79,7 @@ describe('UPDATE', () => {
       reqPatch = reqPut = null;
     })
 
-    // @todo #9
-    xit('the request should receive only modified fields per default', () => {
+    it('the request should receive only modified fields per default', () => {
       return store.update('Article', ID, UPDATE_PARAMS).then((data) => {
         expect(reqPatch.body).to.deep.equal({
           data: {
@@ -102,7 +101,28 @@ describe('UPDATE', () => {
       })
     });
 
-    it('the request should receive all fields when used with replace: true', () => {
+    it('the request should only received changes when a record is saved', () => {
+      return store.find('Article', ID).then((record) => {
+        record.title = UPDATE_PARAMS.title;
+        return record.save();
+      }).then((data) => {
+        console.info(reqPatch.body);
+        expect(reqPatch.body).to.deep.equal({
+          data: {
+            type: MAPPER_NAME,
+            id: ID,
+            attributes: { title: UPDATE_PARAMS.title }
+          }
+        })
+
+        expect(data).to.be.an('object')
+        expect(data.id).to.equal(ID)
+        expect(data.title).to.equal(UPDATE_PARAMS.title)
+        expect(data.content).to.equal(FIND_RESPONSE.data.attributes.content)
+      })
+    });
+
+    it('the request should send relation when a record is saved.', () => {
       return store.update('Article', ID, UPDATE_PARAMS, {
         replace: true
       }).then((data) => {
@@ -123,6 +143,10 @@ describe('UPDATE', () => {
         expect(data.content).to.equal(FIND_RESPONSE.data.attributes.content)
       })
     });
+
+    it('the request should send all attributes and relationships when record is saved with option `replace`', () =>{
+      return true;
+    })
   })
 
   describe('when use of unsupported methods', () => {

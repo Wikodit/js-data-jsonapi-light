@@ -71,6 +71,16 @@ export class JsonApiAdapter extends HttpAdapter{
     // Ensure id is properly set
     props[mapper.idAttribute] = id;
 
+     if (!opts.replace) {
+        opts.method = opts.method || 'patch';
+      }
+
+    // We need the record to get changes
+    let record = (<any>mapper).datastore.get(mapper.name, id);
+    if (record) {
+      console.info(record.changes());
+    }
+
     return this.handleBeforeLifecycle(opts).then(() => {
       return HttpAdapter.prototype.update.call(this, mapper, id, props, opts)
     }).then(this.handleResponse(opts))
