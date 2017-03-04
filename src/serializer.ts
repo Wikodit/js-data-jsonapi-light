@@ -20,6 +20,11 @@ export function jsonApiSerialize (mapper:any, data:any, opts:any){
   // Just cache a pointer to relations for the Resource
   mapperCacheRelationByField(mapper);
 
+  if (opts.changes && id && mapper.changes(id)) {
+    let changes = mapper.changes(id);
+    console.info('changes', changes);
+  }
+
   let relationships:any = {}
 
   for (let key in data) {
@@ -44,7 +49,9 @@ export function jsonApiSerialize (mapper:any, data:any, opts:any){
 
   // Work for update or create, if an id is given, server should accept it
   if (id) output.data.id = id;
-  if (Object.keys(relationships)) output.data.relationships = relationships;
+  if (Object.keys(relationships).length) {
+    output.data.relationships = relationships;
+  }
 
   return output;
 }
