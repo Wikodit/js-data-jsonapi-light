@@ -19,3 +19,5 @@ node_modules
 npm-debug.log
 .vscode
 coverage
+dist
+!dist/js-data-jsonapi-light.*

@@ -70,8 +70,18 @@ export function jsonApiDeserialize(mapper:Mapper, res:any, opts:any){
             continue;
           }
 
+          // In any case we include the Id in the attributes if we are in the
+          // case of a `belongsTo`
+          // For `hasOne`, like it's the remote object which should include
+          // the key, we don't do anything.
+          if (relation.type === 'belongsTo') {
+            item.attributes[relation.localKey] = link.id;
+          }
+
           if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
+            let remoteIdAttribute = relation.relatedCollection.idAttribute;
             let itemLinked:any = itemsIndexed[link.type][link.id];
+            itemLinked.attributes[remoteIdAttribute] = link.id;
             item.attributes[relation.localField] = itemLinked.attributes;
           }
         } else if (relation.type === 'hasMany') {

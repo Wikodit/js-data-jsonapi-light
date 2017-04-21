@@ -1,0 +1,29 @@
+{
+  "links": {
+    "self": "api/articles.json"
+  },
+  "data": [
+    {
+      "type": "Article",
+      "id": "017bc4b9-014c-4873-bbda-12c4f5475740",
+      "attributes": {
+        "title": "What's up today?",
+        "content": "Nothing much..."
+      },
+      "relationships": {
+        "author": {
+          "links": {
+            "related": "api/articles/017bc4b9-014c-4873-bbda-12c4f5475740/authors.json"
+          },
+          "data": {
+            "id": "e81fea3d-6379-4137-8068-7d70a90a1a7c",
+            "type": "User"
+          }
+        }
+      },
+      "links": {
+        "self": "api/articles/017bc4b9-014c-4873-bbda-12c4f5475740.json"
+      }
+    }
+  ]
+}
