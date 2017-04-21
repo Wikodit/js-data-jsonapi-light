@@ -58,7 +58,8 @@ export function jsonApiDeserialize(mapper:Mapper, res:any, opts:any){
       if (!item.relationships || !Object.keys(item.relationships)) continue;
 
       for (let relationField in (item.relationships || {})) {
-        let relation:any = resource.relationByField[relationField]
+        let relation:any = resource.relationByField[relationField];
+        
         if (!relation || !item.relationships[relationField] || !item.relationships[relationField].data) {
           continue;
         }

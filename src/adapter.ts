@@ -71,14 +71,28 @@ export class JsonApiAdapter extends HttpAdapter{
     // Ensure id is properly set
     props[mapper.idAttribute] = id;
 
-     if (!opts.replace) {
-        opts.method = opts.method || 'patch';
+    // If we don't force the replace, then we will attempt to only update what
+    // has been changed through PATCH
+    if (!opts.forceReplace) {
+      // opts has the finaly say over the method used
+      opts.method = opts.method || 'patch';
+      
+      // We need the record to get changes
+      let record = (<any>mapper).datastore.get(mapper.name, id);
+      if (record) {
+        // Now we have two possible cases :
+        // * either props contain parameters the user want to update, and only
+        //   those should be updated
+        // * or when record is saved, props contains all data from the record
+        //   even unchanged data
+        // So we can't use record.changes(), because if first case it will be
+        // empty or with not the data we want to send. Thus we can do the same
+        // things the changes method do, but with props rather than with 
+        // current attributes.
+        
+        // opts.changes = record.changes();
+        opts.changes = utils.diffObjects(props, record._get('previous'), null);
       }
-
-    // We need the record to get changes
-    let record = (<any>mapper).datastore.get(mapper.name, id);
-    if (record) {
-      console.info(record.changes());
     }
 
     return this.handleBeforeLifecycle(opts).then(() => {

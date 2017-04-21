@@ -95,7 +95,7 @@ describe('Lifecycle', () => {
 
       return store.update('User', USER.ID, { 
         email: USER.EMAIL 
-      }, { beforeSerialize, replace: true }).then(() => {
+      }, { beforeSerialize, forceReplace: true }).then(() => {
         expect(beforeSerialize.calledOnce).to.be.true;
         expect(req.body.data.attributes).to.deep.equal({
           email: USER.EMAIL,
@@ -122,7 +122,7 @@ describe('Lifecycle', () => {
 
       return store.update('User', USER.ID, { 
         email: USER.EMAIL 
-      }, { afterSerialize, replace: true }).then(() => {
+      }, { afterSerialize, forceReplace: true }).then(() => {
         expect(afterSerialize.calledOnce).to.be.true;
         expect(req.body.data.attributes).to.deep.equal({
           email: USER.EMAIL,

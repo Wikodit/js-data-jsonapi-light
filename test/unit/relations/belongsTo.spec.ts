@@ -57,4 +57,30 @@ describe('relations/belongsTo', () => {
       expect(users[0].email).to.equal(USER.EMAIL);
     })
   })
+  
+  describe('when resource is fetched with belongsTo reference to un unknown resource', () => {
+    const
+      ARTICLE_LENGTH = 1,
+      ARTICLE = {
+        AUTHOR_ID: 'e81fea3d-6379-4137-8068-7d70a90a1a7c'
+      }
+    ;
+
+    let articles:Array<any>;
+
+    beforeEach(() => {
+      return store.findAll('Article').then((datas:Array<any>) => {
+        articles = datas
+      })
+    });
+
+    afterEach(() => {
+      articles = null
+    });
+
+    it('should keep the relation field intact', () => {
+      expect(articles).to.be.an('array').and.to.have.lengthOf(ARTICLE_LENGTH);
+      expect(articles[0].authorId).to.equal(ARTICLE.AUTHOR_ID);
+    });
+  });
 });

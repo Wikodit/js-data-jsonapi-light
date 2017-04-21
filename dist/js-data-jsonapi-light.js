@@ -214,12 +214,12 @@ var JsonApiAdapter = (function (_super) {
     JsonApiAdapter.prototype.update = function (mapper, id, props, opts) {
         var _this = this;
         props[mapper.idAttribute] = id;
-        if (!opts.replace) {
+        if (!opts.forceReplace) {
             opts.method = opts.method || 'patch';
-        }
-        var record = mapper.datastore.get(mapper.name, id);
-        if (record) {
-            console.info(record.changes());
+            var record = mapper.datastore.get(mapper.name, id);
+            if (record) {
+                opts.changes = js_data_1.utils.diffObjects(props, record._get('previous'), null);
+            }
         }
         return this.handleBeforeLifecycle(opts).then(function () {
             return js_data_http_1.HttpAdapter.prototype.update.call(_this, mapper, id, props, opts);
@@ -312,8 +312,13 @@ function jsonApiDeserialize(mapper, res, opts) {
                         this.warn(strings_1.WARNING.WRONG_RELATION_OBJECT_EXPECTED, relation);
                         continue;
                     }
+                    if (relation.type === 'belongsTo') {
+                        item.attributes[relation.localKey] = link.id;
+                    }
                     if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
+                        var remoteIdAttribute = relation.relatedCollection.idAttribute;
                         var itemLinked = itemsIndexed[link.type][link.id];
+                        itemLinked.attributes[remoteIdAttribute] = link.id;
                         item.attributes[relation.localField] = itemLinked.attributes;
                     }
                 }
@@ -384,35 +389,35 @@ function jsonApiSerialize(mapper, data, opts) {
     var id = data[mapper.idAttribute];
     delete data[mapper.idAttribute];
     utils_1.mapperCacheRelationByField(mapper);
-    console.info(mapper.datastore.get(mapper.name, id));
-    console.info('CIH', opts.changes, id, mapper.changes(id));
-    if (opts.changes && id && mapper.changes(id)) {
-        var changes = mapper.changes(id);
-        console.info('changes', changes);
-    }
-    var relationships = {};
-    for (var key in data) {
-        var relation = mapper.relationByFieldId[key];
-        if (relation) {
-            relationships[relation.localField] = {
-                data: {
-                    type: relation.relation,
-                    id: data[key]
-                }
-            };
-            delete data[key];
-        }
-    }
-    var output = {
-        data: {
-            type: mapper.name,
-            attributes: data
-        }
-    };
+    var output = { data: { type: mapper.name } };
     if (id)
         output.data.id = id;
+    var relationships = {};
+    var attributes = {};
     if (Object.keys(relationships).length) {
         output.data.relationships = relationships;
+    }
+    if (!opts.forceReplace && opts.changes && id) {
+        data = opts.changes.changed;
+    }
+    for (var key in data) {
+        var relation = mapper.relationByFieldId[key];
+        if (!relation) {
+            attributes[key] = data[key];
+            continue;
+        }
+        relationships[relation.localField] = {
+            data: {
+                type: relation.relation,
+                id: data[key]
+            }
+        };
+    }
+    if (Object.keys(relationships).length) {
+        output.data.relationships = relationships;
+    }
+    if (Object.keys(attributes).length !== 0) {
+        output.data.attributes = attributes;
     }
     return output;
 }
