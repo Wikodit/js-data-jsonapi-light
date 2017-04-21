@@ -32,8 +32,10 @@ describe('UPDATE', () => {
           },
           relationships: {
             author: {
-              type: 'User',
-              id: 'e81fea3d-6379-4137-8068-7d70a90a1a7c'
+              data: {
+                type: 'User',
+                id: 'e81fea3d-6379-4137-8068-7d70a90a1a7c'
+              }
             }
           }
         }
@@ -52,8 +54,10 @@ describe('UPDATE', () => {
           },
           relationships: {
             author: {
-              type: 'User',
-              id: UPDATE_PARAMS.authorId
+              data: {
+                type: 'User',
+                id: UPDATE_PARAMS.authorId
+              }
             }
           }
         }
@@ -106,7 +110,6 @@ describe('UPDATE', () => {
         record.title = UPDATE_PARAMS.title;
         return record.save();
       }).then((data) => {
-        console.info(reqPatch.body);
         expect(reqPatch.body).to.deep.equal({
           data: {
             type: MAPPER_NAME,
@@ -124,7 +127,7 @@ describe('UPDATE', () => {
 
     it('the request should send relation when a record is saved.', () => {
       return store.update('Article', ID, UPDATE_PARAMS, {
-        replace: true
+        forceReplace: true
       }).then((data) => {
         expect(reqPut.body.data).to.be.an('object');
         expect(reqPut.body.data.type).to.equal(MAPPER_NAME);

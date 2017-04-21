@@ -148,10 +148,21 @@ Sometime you want to be able to do some custom additional serialization / deseri
   });
 ```
 
+## Options
 
-### Get JSONApi Meta
+### Adapter options
 
-To retrieve JSONApi Meta on every call :
+#### `beforeDeserialize`, `afterDeserialize`, `beforeSerialize`, `afterSerialize`
+
+Deserialization and serialization hooks, see above.
+
+### CRUD methods options
+
+#### `raw: boolean`
+
+Send back raw response
+
+Eg. To retrieve JSONApi Meta :
 
 ```js
 store.findAll('User', {}, {
@@ -162,6 +173,22 @@ store.findAll('User', {}, {
 })
 ```
 
+* Compatible with: `all`
+
+#### `forceReplace: boolean`
+
+On update, force all fields to be sent even if they haven't been changed.
+It will switch from default PATCH http verb to PUT.
+
+If some properties are passed to the update, only those will be sent. Those who has not changed compared to the record original properties will not be sent.
+Be careful, because it means, once the update made, the server will return saved datas, and it will erased possible properties that were changed on the record but not given to the update. Nothing wrong with that, it's the correct behavior, but you should know about this logic.
+
+* Compatible with: `update`, `save`
+
+#### `beforeDeserialize`, `afterDeserialize`, `beforeSerialize`, `afterSerialize`
+
+Deserialization and serialization hooks, see above.
+
 ## Development Status
 
 ### What is done
@@ -170,11 +197,11 @@ store.findAll('User', {}, {
 * Meta handling
 * Serialization
 * Custom hooks
+* By default update PATCH changes instead of PUT the record
 
 ### What is remaining
 
 * ManyToMany
-* PATCH instead of PUT
 * Error handling
 
 ## License

@@ -1,6 +1,6 @@
 {
   "name": "js-data-jsonapi-light",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.0-alpha.6",
   "description": "JsonApi adapter serializer/dezerializer light.",
   "main": "./dist/js-data-jsonapi-light.js",
   "author": {
