@@ -28,11 +28,6 @@ export function jsonApiSerialize (mapper:any, data:any, opts:any){
   let relationships:any = {};
   let attributes:any = {};
 
-  // Only include relationships if needed
-  if (Object.keys(relationships).length) {
-    output.data.relationships = relationships;
-  }
-
   // opts.changes is there when update method is PATCH
   // in this case we change only what has changed
   if (!opts.forceReplace && opts.changes && id) {

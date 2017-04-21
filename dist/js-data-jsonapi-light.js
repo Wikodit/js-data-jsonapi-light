@@ -394,9 +394,6 @@ function jsonApiSerialize(mapper, data, opts) {
         output.data.id = id;
     var relationships = {};
     var attributes = {};
-    if (Object.keys(relationships).length) {
-        output.data.relationships = relationships;
-    }
     if (!opts.forceReplace && opts.changes && id) {
         data = opts.changes.changed;
     }
