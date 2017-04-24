@@ -10,5 +10,6 @@ export const WARNING = {
   NO_RESSOURCE: (type:string) => { return `Can\'t find resource '${type}'` },
   RELATION_UNKNOWN: 'Unknown relation',
   WRONG_RELATION_ARRAY_EXPECTED: 'Wrong relation somewhere, array expected',
-  WRONG_RELATION_OBJECT_EXPECTED: 'Wrong relation somewhere, object expected'
+  WRONG_RELATION_OBJECT_EXPECTED: 'Wrong relation somewhere, object expected',
+  NO_FOREIGN_KEY: 'No `foreignKey` on this relation. Be careful `localKey` doesn\'t exist anymore on JSData v3 and has been replaced with `foreignKey`. `belongsTo` relations must have a `foreignKey`.'
 }

@@ -4,10 +4,14 @@ export function mapperCacheRelationByField (mapper:any):void {
     mapper.relationByFieldId = {};
     for (let i = 0, l = (mapper.relationList || []).length; i < l; i++ ) {
       let field:string = mapper.relationList[i].localField;
-      let key:string = mapper.relationList[i].localKey;
 
-      if (key) {
-        mapper.relationByFieldId[key] = mapper.relationList[i];
+      if (mapper.relationList[i].type === 'belongsTo) {
+        let key:string = mapper.relationList[i].foreignKey;
+        if (!relation.foreignKey) {
+          this.warn(WARNING.NO_FOREIGN_KEY, relation);
+        } else {
+          mapper.relationByFieldId[key] = mapper.relationList[i];
+        }
       }
 
       if (field) {

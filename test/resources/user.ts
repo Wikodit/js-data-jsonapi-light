@@ -23,7 +23,7 @@ export const User = window.store.defineMapper('User',{
     belongsTo: {
       'UserGroup': {
         localField: 'group',
-        localKey: 'groupId'
+        foreignKey: 'groupId'
       }
     }
   }

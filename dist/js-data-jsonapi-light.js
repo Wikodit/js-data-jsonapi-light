@@ -94,39 +94,16 @@ exports.WARNING = {
     NO_RESSOURCE: function (type) { return "Can't find resource '" + type + "'"; },
     RELATION_UNKNOWN: 'Unknown relation',
     WRONG_RELATION_ARRAY_EXPECTED: 'Wrong relation somewhere, array expected',
-    WRONG_RELATION_OBJECT_EXPECTED: 'Wrong relation somewhere, object expected'
+    WRONG_RELATION_OBJECT_EXPECTED: 'Wrong relation somewhere, object expected',
+    NO_FOREIGN_KEY: 'No `foreignKey` on this relation. Be careful `localKey` doesn\'t exist anymore on JSData v3 and has been replaced with `foreignKey`. `belongsTo` relations must have a `foreignKey`.'
 };
 
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-function mapperCacheRelationByField(mapper) {
-    if (!mapper.relationByField || !mapper.relationByFieldId) {
-        mapper.relationByField = {};
-        mapper.relationByFieldId = {};
-        for (var i = 0, l = (mapper.relationList || []).length; i < l; i++) {
-            var field = mapper.relationList[i].localField;
-            var key = mapper.relationList[i].localKey;
-            if (key) {
-                mapper.relationByFieldId[key] = mapper.relationList[i];
-            }
-            if (field) {
-                mapper.relationByField[field] = mapper.relationList[i];
-            }
-            else {
-                this.warn('localField missing');
-                continue;
-            }
-        }
-    }
-}
-exports.mapperCacheRelationByField = mapperCacheRelationByField;
-
+throw new Error("Module parse failed: /Users/jeremyt/Development/OpenSource/js-data-jsonapi-light/node_modules/ts-loader/index.js!/Users/jeremyt/Development/OpenSource/js-data-jsonapi-light/src/utils.ts Unterminated string constant (9:48)\nYou may need an appropriate loader to handle this file type.\n|         for (var i = 0, l = (mapper.relationList || []).length; i < l; i++) {\n|             var field = mapper.relationList[i].localField;\n|             if (mapper.relationList[i].type === 'belongsTo) {)\n|                 var key = mapper.relationList[i].foreignKey;\n|             if (!relation.foreignKey) {");
 
 /***/ }),
 /* 2 */
@@ -313,7 +290,12 @@ function jsonApiDeserialize(mapper, res, opts) {
                         continue;
                     }
                     if (relation.type === 'belongsTo') {
-                        item.attributes[relation.localKey] = link.id;
+                        if (!relation.foreignKey) {
+                            this.warn(strings_1.WARNING.NO_FOREIGN_KEY, relation);
+                        }
+                        else {
+                            item.attributes[relation.foreignKey] = link.id;
+                        }
                     }
                     if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
                         var remoteIdAttribute = relation.relatedCollection.idAttribute;

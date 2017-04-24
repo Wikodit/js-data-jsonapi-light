@@ -1,0 +1,110 @@
+{
+  "meta": {
+    "description": "Nested structure."
+  },
+  "links": {
+    "self": "api/categories.json"
+  },
+  "data": [
+    {
+      "type": "Category",
+      "id": "437add6a-a40f-4cf0-9c27-fd7bb4c9ef71",
+      "attributes": {
+        "name": "Level I - Root category"
+      },
+      "relationships": {
+        "parent": {
+          "links": {
+            "related": "api/categories/437add6a-a40f-4cf0-9c27-fd7bb4c9ef71/parent.json"
+          }
+        },
+        "children": {
+          "links": {
+            "related": "api/categories/437add6a-a40f-4cf0-9c27-fd7bb4c9ef71/children.json"
+          }
+        }
+      },
+      "links": {
+        "self": "api/categories/437add6a-a40f-4cf0-9c27-fd7bb4c9ef71.json"
+      }
+    },
+    {
+      "type": "Category",
+      "id": "dbb8d464-8229-4865-86c3-48ac90ae1029",
+      "attributes": {
+        "name": "Cat I.A"
+      },
+      "relationships": {
+        "parent": {
+          "links": {
+            "related": "api/categories/dbb8d464-8229-4865-86c3-48ac90ae1029/parent.json"
+          },
+          "data": {
+            "id": "437add6a-a40f-4cf0-9c27-fd7bb4c9ef71",
+            "type": "Category"
+          }
+        },
+        "children": {
+          "links": {
+            "related": "api/categories/dbb8d464-8229-4865-86c3-48ac90ae1029/children.json"
+          }
+        }
+      },
+      "links": {
+        "self": "api/categories/dbb8d464-8229-4865-86c3-48ac90ae1029.json"
+      }
+    },
+    {
+      "type": "Category",
+      "id": "eecff649-5ad2-4e42-8d1a-f1e5d55926bd",
+      "attributes": {
+        "name": "Cat I.B"
+      },
+      "relationships": {
+        "parent": {
+          "links": {
+            "related": "api/categories/eecff649-5ad2-4e42-8d1a-f1e5d55926bd/parent.json"
+          },
+          "data": {
+            "id": "437add6a-a40f-4cf0-9c27-fd7bb4c9ef71",
+            "type": "Category"
+          }
+        },
+        "children": {
+          "links": {
+            "related": "api/categories/eecff649-5ad2-4e42-8d1a-f1e5d55926bd/children.json"
+          }
+        }
+      },
+      "links": {
+        "self": "api/categories/eecff649-5ad2-4e42-8d1a-f1e5d55926bd.json"
+      }
+    },
+    {
+      "type": "Category",
+      "id": "c829339e-7b24-4fc8-b6ff-b605a2020fb3",
+      "attributes": {
+        "name": "Cat I.B.a"
+      },
+      "relationships": {
+        "parent": {
+          "links": {
+            "related": "api/categories/c829339e-7b24-4fc8-b6ff-b605a2020fb3/parent.json"
+          },
+          "data": {
+            "id": "eecff649-5ad2-4e42-8d1a-f1e5d55926bd",
+            "type": "Category"
+          }
+        },
+        "children": {
+          "links": {
+            "related": "api/categories/c829339e-7b24-4fc8-b6ff-b605a2020fb3/children.json"
+          }
+        }
+      },
+      "links": {
+        "self": "api/categories/c829339e-7b24-4fc8-b6ff-b605a2020fb3.json"
+      }
+    }
+  ]
+}

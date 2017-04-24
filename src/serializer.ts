@@ -45,7 +45,7 @@ export function jsonApiSerialize (mapper:any, data:any, opts:any){
       continue;
     }
 
-    // Relation that can be in data are only belongsTo since it has a localKey
+    // Relation that can be in data are only belongsTo
     relationships[relation.localField] = {
       data: {
         type: relation.relation,

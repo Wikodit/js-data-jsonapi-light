@@ -1,4 +1,7 @@
 {
+  "meta": {
+    "description": "Have a belongsTo but no included data."
+  },
   "links": {
     "self": "api/articles.json"
   },

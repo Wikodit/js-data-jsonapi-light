@@ -5,11 +5,11 @@ export const UserFavorite = window.store.defineMapper('UserFavorite', {
     belongsTo: {
       'Article': {
         localField: 'article',
-        localKey: 'articleId'
+        foreignKey: 'articleId'
       },
       'User': {
         localField: 'user',
-        localKey: 'userId'
+        foreignKey: 'userId'
       }
     }
   }

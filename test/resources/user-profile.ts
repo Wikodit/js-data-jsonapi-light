@@ -6,7 +6,7 @@ export const UserProfile  = window.store.defineMapper('UserProfile', {
     belongsTo: {
       'User': {
         localField: 'user',
-        localKey: 'userId'
+        foreignKey: 'userId'
       }
     }
   }

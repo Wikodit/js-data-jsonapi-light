@@ -6,7 +6,7 @@ export const Article  = window.store.defineMapper('Article', {
     belongsTo: {
       'User': {
         localField: 'author',
-        localKey: 'authorId'
+        foreignKey: 'authorId'
       }
     }
     // ,

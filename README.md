@@ -26,7 +26,7 @@ This adapter just add a light serialize and deserialize layer over DSHttpAdapter
 | js-data      | >= 3.0.0-rc.7 |
 | js-data-http | >= 3.0.0-rc.2 |
 
-By design it is not compatible with JS-Data v2, for a full integration on v2, you could use: [js-data-jsonapi](https://github.com/BlairAllegroTech/js-data-jsonapi).
+By design it is not compatible with JS-Data v2, for a full integration on v2, you should use: [js-data-jsonapi](https://github.com/BlairAllegroTech/js-data-jsonapi).
 
 ## Quick Start
 

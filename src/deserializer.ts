@@ -76,7 +76,11 @@ export function jsonApiDeserialize(mapper:Mapper, res:any, opts:any){
           // For `hasOne`, like it's the remote object which should include
           // the key, we don't do anything.
           if (relation.type === 'belongsTo') {
-            item.attributes[relation.localKey] = link.id;
+            if (!relation.foreignKey) {
+              this.warn(WARNING.NO_FOREIGN_KEY, relation);
+            } else {
+              item.attributes[relation.foreignKey] = link.id;
+            }
           }
 
           if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
