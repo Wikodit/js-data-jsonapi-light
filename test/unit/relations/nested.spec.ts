@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { store } from '../../ds';
 import * as Resources from '../../resources'
 
-describe('relations/nested', () => {
+describe.skip('relations/nested', () => {
   describe('when data are fetched, relations should persist and be assigned if data is there', () => {
     const
       CATEGORY_LENGTH = 4,

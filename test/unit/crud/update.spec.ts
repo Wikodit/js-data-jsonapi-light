@@ -125,6 +125,23 @@ describe('UPDATE', () => {
       })
     });
 
+    it('the request should also received added changes when a record is saved', () => {
+      const TEST_ADDED_FIELD = 'test';
+      return store.find('Article', ID).then((record) => {
+        record.title = UPDATE_PARAMS.title;
+        record.description = TEST_ADDED_FIELD;
+        return record.save();
+      }).then((data) => {
+        expect(reqPatch.body).to.deep.equal({
+          data: {
+            type: MAPPER_NAME,
+            id: ID,
+            attributes: { title: UPDATE_PARAMS.title, testAddedField: TEST_ADDED_FIELD }
+          }
+        })
+      })
+    });
+
     it('the request should send relation when a record is saved.', () => {
       return store.update('Article', ID, UPDATE_PARAMS, {
         forceReplace: true
