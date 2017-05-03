@@ -129,15 +129,15 @@ describe('UPDATE', () => {
       const TEST_ADDED_FIELD = 'test';
       return store.find('Article', ID).then((record) => {
         record.title = UPDATE_PARAMS.title;
-        record.description = TEST_ADDED_FIELD;
+        record.testAddedField = TEST_ADDED_FIELD;
         return record.save();
       }).then((data) => {
-        expect(reqPatch.body).to.deep.equal({
-          data: {
-            type: MAPPER_NAME,
-            id: ID,
-            attributes: { title: UPDATE_PARAMS.title, testAddedField: TEST_ADDED_FIELD }
-          }
+        expect(reqPatch.body.data).to.be.an('object');
+        expect(reqPatch.body.data.type).to.equal(MAPPER_NAME);
+        expect(reqPatch.body.data.id).to.equal(ID);
+        expect(reqPatch.body.data.attributes).to.deep.equal({
+          title: UPDATE_PARAMS.title,
+          testAddedField: TEST_ADDED_FIELD
         })
       })
     });
