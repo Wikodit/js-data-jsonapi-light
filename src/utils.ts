@@ -1,3 +1,5 @@
+import { WARNING } from './strings';
+
 export function mapperCacheRelationByField (mapper:any):void {
   if (!mapper.relationByField || !mapper.relationByFieldId) {
     mapper.relationByField = {};
@@ -5,10 +7,10 @@ export function mapperCacheRelationByField (mapper:any):void {
     for (let i = 0, l = (mapper.relationList || []).length; i < l; i++ ) {
       let field:string = mapper.relationList[i].localField;
 
-      if (mapper.relationList[i].type === 'belongsTo) {
+      if (mapper.relationList[i].type === 'belongsTo') {
         let key:string = mapper.relationList[i].foreignKey;
-        if (!relation.foreignKey) {
-          this.warn(WARNING.NO_FOREIGN_KEY, relation);
+        if (!mapper.relationList[i].foreignKey) {
+          this.warn(WARNING.NO_FOREIGN_KEY, mapper.relationList[i]);
         } else {
           mapper.relationByFieldId[key] = mapper.relationList[i];
         }
