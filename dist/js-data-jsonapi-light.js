@@ -385,6 +385,7 @@ exports.jsonApiDeserialize = jsonApiDeserialize;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var utils_1 = __webpack_require__(1);
+var js_data_1 = __webpack_require__(2);
 function wrapSerialize(self) {
     return function (mapper, data, opts) {
         var beforeSerialize = opts.beforeSerialize || mapper.beforeSerialize || self.options.beforeSerialize, afterSerialize = opts.afterSerialize || mapper.afterSerialize || self.options.afterSerialize;
@@ -407,7 +408,7 @@ function jsonApiSerialize(mapper, data, opts) {
     var relationships = {};
     var attributes = {};
     if (!opts.forceReplace && opts.changes && id) {
-        data = opts.changes.changed;
+        data = js_data_1.utils.deepMixIn(js_data_1.utils.deepMixIn({}, opts.changes.changed), opts.changes.added);
     }
     for (var key in data) {
         var relation = mapper.relationByFieldId[key];

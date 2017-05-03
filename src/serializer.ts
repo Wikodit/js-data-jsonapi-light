@@ -1,4 +1,5 @@
 import { mapperCacheRelationByField } from './utils';
+import { utils } from 'js-data';
 
 export function wrapSerialize (self:any):any{
   return function(mapper:any, data:any, opts:any){
@@ -31,7 +32,10 @@ export function jsonApiSerialize (mapper:any, data:any, opts:any){
   // opts.changes is there when update method is PATCH
   // in this case we change only what has changed
   if (!opts.forceReplace && opts.changes && id) {
-    data = opts.changes.changed;
+    data = utils.deepMixIn(
+      utils.deepMixIn({}, opts.changes.changed),
+      opts.changes.added
+    );
   }
 
   // @todo For the moment sending hasMany items is not supported and maybe
