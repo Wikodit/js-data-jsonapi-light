@@ -101,9 +101,39 @@ exports.WARNING = {
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-throw new Error("Module parse failed: /Users/jeremyt/Development/OpenSource/js-data-jsonapi-light/node_modules/ts-loader/index.js!/Users/jeremyt/Development/OpenSource/js-data-jsonapi-light/src/utils.ts Unterminated string constant (9:48)\nYou may need an appropriate loader to handle this file type.\n|         for (var i = 0, l = (mapper.relationList || []).length; i < l; i++) {\n|             var field = mapper.relationList[i].localField;\n|             if (mapper.relationList[i].type === 'belongsTo) {)\n|                 var key = mapper.relationList[i].foreignKey;\n|             if (!relation.foreignKey) {");
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var strings_1 = __webpack_require__(0);
+function mapperCacheRelationByField(mapper) {
+    if (!mapper.relationByField || !mapper.relationByFieldId) {
+        mapper.relationByField = {};
+        mapper.relationByFieldId = {};
+        for (var i = 0, l = (mapper.relationList || []).length; i < l; i++) {
+            var field = mapper.relationList[i].localField;
+            if (mapper.relationList[i].type === 'belongsTo') {
+                var key = mapper.relationList[i].foreignKey;
+                if (!mapper.relationList[i].foreignKey) {
+                    this.warn(strings_1.WARNING.NO_FOREIGN_KEY, mapper.relationList[i]);
+                }
+                else {
+                    mapper.relationByFieldId[key] = mapper.relationList[i];
+                }
+            }
+            if (field) {
+                mapper.relationByField[field] = mapper.relationList[i];
+            }
+            else {
+                this.warn('localField missing');
+                continue;
+            }
+        }
+    }
+}
+exports.mapperCacheRelationByField = mapperCacheRelationByField;
+
 
 /***/ }),
 /* 2 */
