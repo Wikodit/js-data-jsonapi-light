@@ -175,7 +175,7 @@ store.findAll('User', {}, {
 
 * Compatible with: `all`
 
-#### `forceReplace: boolean`
+#### `forceReplace: boolean(false)`
 
 On update, force all fields to be sent even if they haven't been changed.
 It will switch from default PATCH http verb to PUT.
@@ -183,6 +183,14 @@ It will switch from default PATCH http verb to PUT.
 If some properties are passed to the update, only those will be sent. Those who has not changed compared to the record original properties will not be sent.
 Be careful, because it means, once the update made, the server will return saved datas, and it will erased possible properties that were changed on the record but not given to the update. Nothing wrong with that, it's the correct behavior, but you should know about this logic.
 
+* Compatible with: `update`, `save`
+
+#### `forceRelationshipsInAttributes: boolean(false)`
+
+On update, force all relationships data to be sent using `attributes` structure instead of default `relationships` within the resource object.
+Note it is not JsonAPI compliant, it is a convenient option to support some specific backends.
+
+* See #23
 * Compatible with: `update`, `save`
 
 #### `beforeDeserialize`, `afterDeserialize`, `beforeSerialize`, `afterSerialize`
