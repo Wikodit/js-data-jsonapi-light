@@ -40,26 +40,31 @@ export function jsonApiSerialize (mapper:any, data:any, opts:any){
 
   // @todo For the moment sending hasMany items is not supported and maybe
   // shouldn't be supported for security reasons (cf. JSON Api Spec)
-  for (let key in data) {
-    let relation:any = mapper.relationByFieldId[key];
+  if (opts.forceRelationshipsInAttributes !== true) {
+    for (let key in data) {
+      let relation:any = mapper.relationByFieldId[key];
+      
+      // No relations means a simple attribute
+      if (!relation) {
+        attributes[key] = data[key];
+        continue;
+      }
 
-    // No relations means a simple attribute
-    if (!relation) {
-      attributes[key] = data[key];
-      continue;
-    }
-
-    // Relation that can be in data are only belongsTo
-    relationships[relation.localField] = {
-      data: {
-        type: relation.relation,
-        id: data[key]
+      // Relation that can be in data are only belongsTo
+      relationships[relation.localField] = {
+        data: {
+          type: relation.relation,
+          id: data[key]
+        }
       }
     }
+  } else {
+    attributes = data;
   }
 
+
   // Only include relationships if needed
-  if (Object.keys(relationships).length) {
+  if (Object.keys(relationships).length !== 0) {
     output.data.relationships = relationships;
   }
 

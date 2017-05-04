@@ -7,7 +7,7 @@
 		exports["JSDataJsonApiLight"] = factory(require("js-data"), require("js-data-http"));
 	else
 		root["JSDataJsonApiLight"] = factory(root["JSData"], root["JSDataHttp"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_6__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_1__, __WEBPACK_EXTERNAL_MODULE_6__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -101,6 +101,12 @@ exports.WARNING = {
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -136,12 +142,6 @@ exports.mapperCacheRelationByField = mapperCacheRelationByField;
 
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
-
-/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -158,7 +158,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var js_data_1 = __webpack_require__(2);
+var js_data_1 = __webpack_require__(1);
 var js_data_http_1 = __webpack_require__(6);
 var deserializer_1 = __webpack_require__(4);
 var serializer_1 = __webpack_require__(5);
@@ -262,8 +262,8 @@ exports.JsonApiAdapter = JsonApiAdapter;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var utils_1 = __webpack_require__(1);
-var js_data_1 = __webpack_require__(2);
+var utils_1 = __webpack_require__(2);
+var js_data_1 = __webpack_require__(1);
 var strings_1 = __webpack_require__(0);
 function wrapDeserialize(self) {
     return function (mapper, res, opts) {
@@ -384,8 +384,8 @@ exports.jsonApiDeserialize = jsonApiDeserialize;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var utils_1 = __webpack_require__(1);
-var js_data_1 = __webpack_require__(2);
+var utils_1 = __webpack_require__(2);
+var js_data_1 = __webpack_require__(1);
 function wrapSerialize(self) {
     return function (mapper, data, opts) {
         var beforeSerialize = opts.beforeSerialize || mapper.beforeSerialize || self.options.beforeSerialize, afterSerialize = opts.afterSerialize || mapper.afterSerialize || self.options.afterSerialize;
@@ -410,20 +410,25 @@ function jsonApiSerialize(mapper, data, opts) {
     if (!opts.forceReplace && opts.changes && id) {
         data = js_data_1.utils.deepMixIn(js_data_1.utils.deepMixIn({}, opts.changes.changed), opts.changes.added);
     }
-    for (var key in data) {
-        var relation = mapper.relationByFieldId[key];
-        if (!relation) {
-            attributes[key] = data[key];
-            continue;
-        }
-        relationships[relation.localField] = {
-            data: {
-                type: relation.relation,
-                id: data[key]
+    if (opts.forceRelationshipsInAttributes !== true) {
+        for (var key in data) {
+            var relation = mapper.relationByFieldId[key];
+            if (!relation) {
+                attributes[key] = data[key];
+                continue;
             }
-        };
+            relationships[relation.localField] = {
+                data: {
+                    type: relation.relation,
+                    id: data[key]
+                }
+            };
+        }
     }
-    if (Object.keys(relationships).length) {
+    else {
+        attributes = data;
+    }
+    if (Object.keys(relationships).length !== 0) {
         output.data.relationships = relationships;
     }
     if (Object.keys(attributes).length !== 0) {
