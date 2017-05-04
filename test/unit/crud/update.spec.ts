@@ -61,6 +61,10 @@ describe('UPDATE', () => {
             }
           }
         }
+      },
+      TMP_AUTHOR:any = {
+        ID: "01ac757a-1cac-4a10-a6f1-ca4b7a91c4a8",
+        EMAIL: "else@example.com"
       };
 
     let reqGet:any = null;
@@ -142,7 +146,51 @@ describe('UPDATE', () => {
       })
     });
 
-    it('the request should send relation when a record is saved.', () => {
+    it('the request should send only changed relation in `relationships` when a record is saved.', () => {
+      return store.find('Article', ID).then((record) => {
+        // When id, record is not considered New
+        const otherAuthor = store.add('User', {
+          id: TMP_AUTHOR.ID,
+          email: TMP_AUTHOR.email
+        });
+        record.authorId = otherAuthor.id;
+        return record.save();
+      }).then((data) => {
+        expect(reqPatch.body.data).to.be.an('object');
+        expect(reqPatch.body.data.type).to.equal(MAPPER_NAME);
+        expect(reqPatch.body.data.id).to.equal(ID);
+        expect(reqPatch.body.data.attributes).to.be.undefined;
+        expect(reqPatch.body.data.relationships).to.be.an('object');
+        expect(reqPatch.body.data.relationships.author).to.be.an('object');
+        expect(reqPatch.body.data.relationships.author.data).to.deep.equal({
+          type: "User",
+          id: TMP_AUTHOR.ID
+        });
+      })
+    });
+
+    it('the request should send changed relation as attributes when a record is saved with option `forceRelationshipsInAttributes`.', () => {
+      return store.find('Article', ID).then((record) => {
+        // When record has id, it is not considered New
+        const otherAuthor = store.add('User', {
+          id: TMP_AUTHOR.ID,
+          email: TMP_AUTHOR.email
+        });
+        record.title = UPDATE_PARAMS.title;
+        record.author = otherAuthor;
+        return record.save({ forceRelationshipsInAttributes: true });
+      }).then((data) => {
+        expect(reqPatch.body.data).to.be.an('object');
+        expect(reqPatch.body.data.type).to.equal(MAPPER_NAME);
+        expect(reqPatch.body.data.id).to.equal(ID);
+        expect(reqPatch.body.data.attributes).to.deep.equal({
+          title: UPDATE_PARAMS.title,
+          authorId: TMP_AUTHOR.ID
+        })
+      })
+    });
+
+    it('the request should send all attributes and relationships when record is saved with option `replace`', () =>{
       return store.update('Article', ID, UPDATE_PARAMS, {
         forceReplace: true
       }).then((data) => {
@@ -162,10 +210,6 @@ describe('UPDATE', () => {
         expect(data.title).to.equal(UPDATE_PARAMS.title)
         expect(data.content).to.equal(FIND_RESPONSE.data.attributes.content)
       })
-    });
-
-    it('the request should send all attributes and relationships when record is saved with option `replace`', () =>{
-      return true;
     })
   })
 
