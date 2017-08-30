@@ -23,8 +23,8 @@ This adapter just add a light serialize and deserialize layer over DSHttpAdapter
 
 | package      | requirement   |
 | ------------ | ------------- |
-| js-data      | >= 3.0.0-rc.7 |
-| js-data-http | >= 3.0.0-rc.2 |
+| js-data      | >= 3.0.0      |
+| js-data-http | >= 3.0.0      |
 
 By design it is not compatible with JS-Data v2, for a full integration on v2, you should use: [js-data-jsonapi](https://github.com/BlairAllegroTech/js-data-jsonapi).
 
@@ -170,6 +170,7 @@ store.findAll('User', {}, {
 }).then((response) => {
   console.log(response.data); // Return the Records
   console.log(response.meta); // Return the JSONApi Metas
+  console.log(response.rawData); // Return the full response (should be discarded as soon as possible to save memory)
 })
 ```
 
@@ -207,10 +208,13 @@ Deserialization and serialization hooks, see above.
 * Custom hooks
 * By default update PATCH changes instead of PUT the record
 
+### What may work
+
+* Error handling (need intensive testing)
+
 ### What is remaining
 
 * ManyToMany
-* Error handling
 
 ## License
 

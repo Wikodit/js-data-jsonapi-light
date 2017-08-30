@@ -32,6 +32,7 @@ export class JsonApiAdapter extends HttpAdapter{
 
   private handleResponse (opts?:any) { return function (response:any): Promise<any> {
     if (opts && opts.raw) {
+      response.rawData = response.data.rawData;
       response.meta = response.data.meta;
       response.data = response.data.result;
     }

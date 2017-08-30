@@ -125,6 +125,7 @@ export function jsonApiDeserialize(mapper:Mapper, res:any, opts:any){
 
   return {
     result: outputDatas,
-    meta: res.data.meta
+    meta: res.data.meta,
+    rawData: res.data
   };
 }

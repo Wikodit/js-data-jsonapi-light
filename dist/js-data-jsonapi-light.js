@@ -188,6 +188,7 @@ var JsonApiAdapter = (function (_super) {
     JsonApiAdapter.prototype.handleResponse = function (opts) {
         return function (response) {
             if (opts && opts.raw) {
+                response.rawData = response.data.rawData;
                 response.meta = response.data.meta;
                 response.data = response.data.result;
             }
@@ -225,7 +226,7 @@ var JsonApiAdapter = (function (_super) {
             opts.method = opts.method || 'patch';
             var record = mapper.datastore.get(mapper.name, id);
             if (record) {
-                opts.changes = js_data_1.utils.diffObjects(props, record._get('previous'), null);
+                opts.changes = js_data_1.utils.diffObjects(props, record._get('previous'), opts);
             }
         }
         return this.handleBeforeLifecycle(opts).then(function () {
@@ -371,7 +372,8 @@ function jsonApiDeserialize(mapper, res, opts) {
     }
     return {
         result: outputDatas,
-        meta: res.data.meta
+        meta: res.data.meta,
+        rawData: res.data
     };
 }
 exports.jsonApiDeserialize = jsonApiDeserialize;
