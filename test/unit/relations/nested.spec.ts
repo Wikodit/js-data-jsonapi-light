@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { store } from '../../ds';
 import * as Resources from '../../resources'
 
-describe.skip('relations/nested', () => {
+describe('relations/nested', () => {
   describe('when data are fetched, relations should persist and be assigned if data is there', () => {
     const
       CATEGORY_LENGTH = 4,
@@ -43,18 +43,18 @@ describe.skip('relations/nested', () => {
     });
 
     it('should be able to ascend in the nested tree to first ancestor', () => {
-      let category = store.get('Category', CATEGORIES_ASCENDING_PATH[CATEGORIES_ASCENDING_PATH.length - 1]);
-      let i = CATEGORIES_ASCENDING_PATH.length - 1; while (i--) {
-        expect(category.parentId).to.equal(CATEGORIES_ASCENDING_PATH[i]);
+      let category = store.get('Category', CATEGORIES_ASCENDING_PATH[0]);
+      for (let i = 0, l = CATEGORIES_ASCENDING_PATH.length - 1; i < l; i++) {
+        expect(category.parentId).to.equal(CATEGORIES_ASCENDING_PATH[i + 1]);
         expect(category).to.have.property('parent');
         expect(category.parent).to.exist;
-        expect(category.parent.id).to.equal(CATEGORIES_ASCENDING_PATH[i]);
-        expect(category.parent.name).to.equal(CATEGORIES_NAME[CATEGORIES_ASCENDING_PATH[i]]);
+        expect(category.parent.id).to.equal(CATEGORIES_ASCENDING_PATH[i + 1]);
+        expect(category.parent.name).to.equal(CATEGORIES_NAME[CATEGORIES_ASCENDING_PATH[i + 1]]);
 
         category = category.parent
       }
 
-      expect(category.parent).to.be.null;
+      expect(category.parent).to.be.undefined;
     });
 
     it('should correctly retain children', () => {
