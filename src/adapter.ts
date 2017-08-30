@@ -91,7 +91,7 @@ export class JsonApiAdapter extends HttpAdapter{
         // current attributes.
         
         // opts.changes = record.changes();
-        opts.changes = utils.diffObjects(props, record._get('previous'), null);
+        opts.changes = utils.diffObjects(props, record._get('previous'), opts);
       }
     }
 
