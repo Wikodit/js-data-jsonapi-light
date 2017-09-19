@@ -1,0 +1,263 @@
+{
+  "links": {
+    "self": "api/companies?include=%7B%22companyUsers%22:%7B%22include%22:%22user%22%7D%7D"
+  },
+  "data": [
+    {
+      "type": "Company",
+      "relationships": {
+        "users": {
+          "links": {
+            "related": "api/companies/457127cc-ffba-435d-8a7e-7ce99adb7f14/users"
+          }
+        },
+        "companyUsers": {
+          "links": {
+            "related": "api/companies/457127cc-ffba-435d-8a7e-7ce99adb7f14/companyUsers"
+          },
+          "data": [
+            {
+              "id": "1a5e9e9f-bbd0-4050-9d91-e1c792f4831b",
+              "type": "CompanyUser"
+            },
+            {
+              "id": "1d40ca13-d593-409d-a6e3-83c7ab86cd7b",
+              "type": "CompanyUser"
+            },
+            {
+              "id": "41deb7d5-ac24-4ee6-b8d0-c1aecb2e5717",
+              "type": "CompanyUser"
+            }
+          ]
+        }
+      },
+      "id": "457127cc-ffba-435d-8a7e-7ce99adb7f14",
+      "attributes": {
+        "name": "Company 1",
+        "createdAt": "2017-09-07T15:28:21.242Z",
+        "updatedAt": "2017-09-18T16:02:34.413Z"
+      },
+      "links": {
+        "self": "api/companies/457127cc-ffba-435d-8a7e-7ce99adb7f14"
+      }
+    },
+    {
+      "type": "Company",
+      "relationships": {
+        "companyUsers": {
+          "links": {
+            "related": "api/companies/e78df576-9704-4292-a6d6-a0680bb80ecd/companyUsers"
+          },
+          "data": [
+            {
+              "id": "b70f21c2-0fdd-4934-9107-5a50f1a05747",
+              "type": "CompanyUser"
+            },
+            {
+              "id": "b7d33348-c362-4cda-aa69-d74b3f7c68d4",
+              "type": "CompanyUser"
+            }
+          ]
+        }
+      },
+      "id": "e78df576-9704-4292-a6d6-a0680bb80ecd",
+      "attributes": {
+        "name": "Company 2",
+        "createdAt": "2017-09-07T15:28:31.673Z",
+        "updatedAt": "2017-09-07T15:28:31.673Z"
+      },
+      "links": {
+        "self": "api/companies/e78df576-9704-4292-a6d6-a0680bb80ecd"
+      }
+    }
+  ],
+  "included": [
+    {
+      "type": "CompanyUser",
+      "id": "1a5e9e9f-bbd0-4050-9d91-e1c792f4831b",
+      "relationships": {
+        "company": {
+          "links": {
+            "related": "api/CompanyUser/1a5e9e9f-bbd0-4050-9d91-e1c792f4831b/company"
+          },
+          "data": {
+            "type": "Company",
+            "id": "457127cc-ffba-435d-8a7e-7ce99adb7f14"
+          }
+        },
+        "user": {
+          "links": {
+            "related": "api/CompanyUser/1a5e9e9f-bbd0-4050-9d91-e1c792f4831b/user"
+          },
+          "data": {
+            "id": "461e99ef-3c58-4f3e-9c2a-a7b190f81372",
+            "type": "User"
+          }
+        }
+      },
+      "attributes": {
+        "createdAt": "2017-09-13T15:23:40.142Z",
+        "updatedAt": "2017-09-13T15:23:40.142Z",
+        "role": "OWNER"
+      }
+    },
+    {
+      "type": "CompanyUser",
+      "id": "1d40ca13-d593-409d-a6e3-83c7ab86cd7b",
+      "relationships": {
+        "company": {
+          "links": {
+            "related": "api/CompanyUser/1d40ca13-d593-409d-a6e3-83c7ab86cd7b/company"
+          },
+          "data": {
+            "type": "Company",
+            "id": "457127cc-ffba-435d-8a7e-7ce99adb7f14"
+          }
+        },
+        "user": {
+          "links": {
+            "related": "api/CompanyUser/1d40ca13-d593-409d-a6e3-83c7ab86cd7b/user"
+          },
+          "data": {
+            "id": "4a914013-2083-490e-93b3-8560d69e3bc0",
+            "type": "User"
+          }
+        }
+      },
+      "attributes": {
+        "createdAt": "2017-09-18T08:30:35.479Z",
+        "updatedAt": "2017-09-18T08:30:35.479Z",
+        "role": "MANAGER"
+      }
+    },
+    {
+      "type": "CompanyUser",
+      "id": "41deb7d5-ac24-4ee6-b8d0-c1aecb2e5717",
+      "relationships": {
+        "company": {
+          "links": {
+            "related": "api/CompanyUser/41deb7d5-ac24-4ee6-b8d0-c1aecb2e5717/company"
+          },
+          "data": {
+            "type": "Company",
+            "id": "457127cc-ffba-435d-8a7e-7ce99adb7f14"
+          }
+        },
+        "user": {
+          "links": {
+            "related": "api/CompanyUser/41deb7d5-ac24-4ee6-b8d0-c1aecb2e5717/user"
+          },
+          "data": {
+            "id": "e9d9d74b-c2ee-4de1-8aba-28ef4b94bfe9",
+            "type": "User"
+          }
+        }
+      },
+      "attributes": {
+        "progression": {
+        },
+        "createdAt": "2017-09-18T08:30:12.397Z",
+        "updatedAt": "2017-09-18T08:30:12.397Z",
+        "role": "CONSUMER"
+      }
+    },
+    {
+      "type": "CompanyUser",
+      "id": "b70f21c2-0fdd-4934-9107-5a50f1a05747",
+      "relationships": {
+        "company": {
+          "links": {
+            "related": "api/CompanyUser/b70f21c2-0fdd-4934-9107-5a50f1a05747/company"
+          },
+          "data": {
+            "type": "Company",
+            "id": "e78df576-9704-4292-a6d6-a0680bb80ecd"
+          }
+        },
+        "user": {
+          "links": {
+            "related": "api/CompanyUser/b70f21c2-0fdd-4934-9107-5a50f1a05747/user"
+          },
+          "data": {
+            "id": "e9d9d74b-c2ee-4de1-8aba-28ef4b94bfe9",
+            "type": "User"
+          }
+        }
+      },
+      "attributes": {
+        "progression": {
+        },
+        "createdAt": "2017-09-07T08:01:59.810Z",
+        "updatedAt": "2017-09-07T08:01:59.810Z",
+        "role": "CONSUMER"
+      }
+    },
+    {
+      "type": "CompanyUser",
+      "id": "b7d33348-c362-4cda-aa69-d74b3f7c68d4",
+      "relationships": {
+        "company": {
+          "links": {
+            "related": "api/CompanyUser/b7d33348-c362-4cda-aa69-d74b3f7c68d4/company"
+          },
+          "data": {
+            "type": "Company",
+            "id": "e78df576-9704-4292-a6d6-a0680bb80ecd"
+          }
+        },
+        "user": {
+          "links": {
+            "related": "api/CompanyUser/b7d33348-c362-4cda-aa69-d74b3f7c68d4/user"
+          },
+          "data": {
+            "id": "b68c2958-9750-4dc9-a964-31841cf97b36",
+            "type": "User"
+          }
+        }
+      },
+      "attributes": {
+        "progression": {
+        },
+        "createdAt": "2017-09-07T08:01:53.328Z",
+        "updatedAt": "2017-09-07T08:01:53.329Z",
+        "role": "OWNER"
+      }
+    },
+    {
+      "type": "User",
+      "id": "461e99ef-3c58-4f3e-9c2a-a7b190f81372",
+      "attributes": {
+        "username": "company1-owner",
+        "createdAt": "2017-08-28T14:59:17.299Z",
+        "updatedAt": "2017-08-28T15:28:11.465Z"
+      }
+    },
+    {
+      "type": "User",
+      "id": "4a914013-2083-490e-93b3-8560d69e3bc0",
+      "attributes": {
+        "username": "company1-manager",
+        "createdAt": "2017-09-18T08:30:35.261Z",
+        "updatedAt": "2017-09-18T08:30:35.405Z"
+      }
+    },
+    {
+      "type": "User",
+      "id": "e9d9d74b-c2ee-4de1-8aba-28ef4b94bfe9",
+      "attributes": {
+        "username": "have-2-companies",
+        "createdAt": "2017-08-22T14:43:53.137Z",
+        "updatedAt": "2017-08-22T14:43:53.137Z"
+      }
+    },
+    {
+      "type": "User",
+      "id": "b68c2958-9750-4dc9-a964-31841cf97b36",
+      "attributes": {
+        "username": "company2-owner",
+        "createdAt": "2017-07-18T12:54:24.706Z",
+        "updatedAt": "2017-07-18T12:54:24.707Z"
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 import * as JSData from 'js-data'
 
-export const User = window.store.defineMapper('User',{
+export const User = (<any>window).store.defineMapper('User',{
   endpoint: 'users',
   relations: {
     hasOne: {
@@ -13,12 +13,16 @@ export const User = window.store.defineMapper('User',{
       'Article': {
         localField: 'articles',
         foreignKey: 'authorId'
-      }
+      },
       // ,
       // 'UserFavorite': {
       //   localField: 'favorites',
       //   foreignKey: 'articleId'
       // }
+      'CompanyUser': {
+        localField: 'companyUsers',
+        localKey: 'userId'
+      },
     },
     belongsTo: {
       'UserGroup': {
