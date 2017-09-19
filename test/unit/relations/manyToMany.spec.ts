@@ -5,7 +5,7 @@ import { store } from '../../ds';
 const rawCompanies = require('../../api/companies.json')
 
 describe('relations/manyToMany', () => {
-  describe.only( 'when resources are fetched with nested included', () => {
+  describe( 'when resources are fetched with nested included', () => {
     beforeEach(() => {
       return store.findAll('Company', {
         include: { companyUsers: {include: 'user' }}
@@ -26,7 +26,7 @@ describe('relations/manyToMany', () => {
       let users = store.getAll('User')
       expect(users).to.have.lengthOf(
         rawCompanies.included.filter((el: any) => {
-          return el.type === 'CompanyUser'
+          return el.type === 'User'
         }).length
       )
     })

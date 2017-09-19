@@ -284,8 +284,7 @@ function jsonApiDeserialize(mapper, res, opts) {
     var store = mapper.datastore;
     var collectionReceived = js_data_1.utils.isArray(res.data.data);
     var itemsIndexed = {};
-    var itemCollection = [].concat(res.data.included || [])
-        .concat(res.data.data || []);
+    var itemCollection = [].concat(res.data.included || []);
     var i = itemCollection.length;
     while (i--) {
         var item = itemCollection[i];
@@ -297,63 +296,66 @@ function jsonApiDeserialize(mapper, res, opts) {
             itemsIndexed[item.type] = {};
         itemsIndexed[item.type][item.id] = item;
     }
-    for (var type in itemsIndexed) {
+    var fullCollection = [].concat(res.data.included || [])
+        .concat(res.data.data || []);
+    for (var i_1 = fullCollection.length; i_1--;) {
+        var item = fullCollection[i_1];
+        var id = item.id, type = item.type;
+        if (!type || !id)
+            continue;
         var resource = store.getMapper(type);
         if (!resource) {
             this.warn(strings_1.WARNING.NO_RESSOURCE(type));
             continue;
         }
         utils_1.mapperCacheRelationByField(resource);
-        for (var id in itemsIndexed[type]) {
-            var item = itemsIndexed[type][id];
-            item.attributes[resource.idAttribute] = id;
-            if (!item.relationships || !Object.keys(item.relationships))
+        item.attributes[resource.idAttribute] = id;
+        if (!item.relationships || !Object.keys(item.relationships))
+            continue;
+        for (var relationField in (item.relationships || {})) {
+            var relation = resource.relationByField[relationField];
+            if (!relation || !item.relationships[relationField] || !item.relationships[relationField].data) {
                 continue;
-            for (var relationField in (item.relationships || {})) {
-                var relation = resource.relationByField[relationField];
-                if (!relation || !item.relationships[relationField] || !item.relationships[relationField].data) {
+            }
+            if (relation.type === 'belongsTo' || relation.type === 'hasOne') {
+                var link = item.relationships[relationField].data;
+                if (!js_data_1.utils.isObject(link)) {
+                    this.warn(strings_1.WARNING.WRONG_RELATION_OBJECT_EXPECTED, relation);
                     continue;
                 }
-                if (relation.type === 'belongsTo' || relation.type === 'hasOne') {
-                    var link = item.relationships[relationField].data;
-                    if (!js_data_1.utils.isObject(link)) {
-                        this.warn(strings_1.WARNING.WRONG_RELATION_OBJECT_EXPECTED, relation);
-                        continue;
+                if (relation.type === 'belongsTo') {
+                    if (!relation.foreignKey) {
+                        this.warn(strings_1.WARNING.NO_FOREIGN_KEY, relation);
                     }
-                    if (relation.type === 'belongsTo') {
-                        if (!relation.foreignKey) {
-                            this.warn(strings_1.WARNING.NO_FOREIGN_KEY, relation);
-                        }
-                        else {
-                            item.attributes[relation.foreignKey] = link.id;
-                        }
+                    else {
+                        item.attributes[relation.foreignKey] = link.id;
                     }
+                }
+                if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
+                    var remoteIdAttribute = relation.relatedCollection.idAttribute;
+                    var itemLinked = itemsIndexed[link.type][link.id];
+                    itemLinked.attributes[remoteIdAttribute] = link.id;
+                    item.attributes[relation.localField] = itemLinked.attributes;
+                }
+            }
+            else if (relation.type === 'hasMany') {
+                var links = item.relationships[relationField].data;
+                if (!js_data_1.utils.isArray(links)) {
+                    this.warn(strings_1.WARNING.WRONG_RELATION_ARRAY_EXPECTED);
+                    continue;
+                }
+                item.attributes[relation.localField] = [];
+                for (var i_2 = 0, l = links.length; i_2 < l; i_2++) {
+                    var link = links[i_2];
                     if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
-                        var remoteIdAttribute = relation.relatedCollection.idAttribute;
-                        var itemLinked = itemsIndexed[link.type][link.id];
-                        itemLinked.attributes[remoteIdAttribute] = link.id;
-                        item.attributes[relation.localField] = itemLinked.attributes;
+                        var itemLinkd = itemsIndexed[link.type][link.id];
+                        item.attributes[relation.localField].push(itemLinkd.attributes);
                     }
                 }
-                else if (relation.type === 'hasMany') {
-                    var links = item.relationships[relationField].data;
-                    if (!js_data_1.utils.isArray(links)) {
-                        this.warn(strings_1.WARNING.WRONG_RELATION_ARRAY_EXPECTED);
-                        continue;
-                    }
-                    item.attributes[relation.localField] = [];
-                    for (var i_1 = 0, l = links.length; i_1 < l; i_1++) {
-                        var link = links[i_1];
-                        if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
-                            var itemLinkd = itemsIndexed[link.type][link.id];
-                            item.attributes[relation.localField].push(itemLinkd.attributes);
-                        }
-                    }
-                }
-                else {
-                    this.warn(strings_1.WARNING.RELATION_UNKNOWN);
-                    continue;
-                }
+            }
+            else {
+                this.warn(strings_1.WARNING.RELATION_UNKNOWN);
+                continue;
             }
         }
     }
@@ -363,8 +365,8 @@ function jsonApiDeserialize(mapper, res, opts) {
     }
     else {
         outputDatas = [];
-        for (var i_2 = 0, l = res.data.data.length; i_2 < l; i_2++) {
-            outputDatas.push(res.data.data[i_2].attributes);
+        for (var i_3 = 0, l = res.data.data.length; i_3 < l; i_3++) {
+            outputDatas.push(res.data.data[i_3].attributes);
         }
     }
     if (!opts.raw) {

@@ -25,8 +25,10 @@ export function jsonApiDeserialize(mapper:Mapper, res:any, opts:any){
   // We store all possible items stores in the response in a Object[type][id]
   // structure
   let itemsIndexed:any = {};
-  let itemCollection:Array<any> = [].concat(res.data.included || [])
-                                    .concat(res.data.data || []);
+
+  // We could add res.data.data here, but it seems js-data doesn't handle
+  // correctly redondant properties
+  let itemCollection:Array<any> = [].concat(res.data.included || []);
 
   let i = itemCollection.length;
   while (i--) {
@@ -42,70 +44,76 @@ export function jsonApiDeserialize(mapper:Mapper, res:any, opts:any){
     itemsIndexed[item.type][item.id] = item;
   }
 
+  // But we should apply relations everywhere
+  let fullCollection:Array<any> = [].concat(res.data.included || [])
+                                    .concat(res.data.data || []);
+
   // Know we will check every possible relationships and try to affect them
   // the correct key/id
-  for (let type in itemsIndexed) {
+  for (let i = fullCollection.length; i--;) {
+    const item = fullCollection[i];
+    const {id, type} = item;
+
+    if (!type || !id) continue;
+
     let resource:any = store.getMapper(type);
     if (!resource) { this.warn(WARNING.NO_RESSOURCE(type)); continue; }
 
     // Just cache a pointer to relations for the Resource
     mapperCacheRelationByField(resource);
 
-    for (let id in itemsIndexed[type]) {
-      let item:any = itemsIndexed[type][id];
-      item.attributes[resource.idAttribute] = id;
+    item.attributes[resource.idAttribute] = id;
 
-      if (!item.relationships || !Object.keys(item.relationships)) continue;
+    if (!item.relationships || !Object.keys(item.relationships)) continue;
 
-      for (let relationField in (item.relationships || {})) {
-        let relation:any = resource.relationByField[relationField];
-        
-        if (!relation || !item.relationships[relationField] || !item.relationships[relationField].data) {
+    for (let relationField in (item.relationships || {})) {
+      let relation:any = resource.relationByField[relationField];
+      
+      if (!relation || !item.relationships[relationField] || !item.relationships[relationField].data) {
+        continue;
+      }
+
+      if (relation.type === 'belongsTo' || relation.type === 'hasOne') {
+        let link:any = item.relationships[relationField].data
+        if (!utils.isObject(link)) {
+          this.warn(WARNING.WRONG_RELATION_OBJECT_EXPECTED, relation);
           continue;
         }
 
-        if (relation.type === 'belongsTo' || relation.type === 'hasOne') {
-          let link:any = item.relationships[relationField].data
-          if (!utils.isObject(link)) {
-            this.warn(WARNING.WRONG_RELATION_OBJECT_EXPECTED, relation);
-            continue;
+        // In any case we include the Id in the attributes if we are in the
+        // case of a `belongsTo`
+        // For `hasOne`, like it's the remote object which should include
+        // the key, we don't do anything.
+        if (relation.type === 'belongsTo') {
+          if (!relation.foreignKey) {
+            this.warn(WARNING.NO_FOREIGN_KEY, relation);
+          } else {
+            item.attributes[relation.foreignKey] = link.id;
           }
+        }
 
-          // In any case we include the Id in the attributes if we are in the
-          // case of a `belongsTo`
-          // For `hasOne`, like it's the remote object which should include
-          // the key, we don't do anything.
-          if (relation.type === 'belongsTo') {
-            if (!relation.foreignKey) {
-              this.warn(WARNING.NO_FOREIGN_KEY, relation);
-            } else {
-              item.attributes[relation.foreignKey] = link.id;
-            }
-          }
+        if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
+          let remoteIdAttribute = relation.relatedCollection.idAttribute;
+          let itemLinked:any = itemsIndexed[link.type][link.id];
+          itemLinked.attributes[remoteIdAttribute] = link.id;
+          item.attributes[relation.localField] = itemLinked.attributes;
+        }
+      } else if (relation.type === 'hasMany') {
+        let links:any = item.relationships[relationField].data
+        if (!utils.isArray(links)) {
+          this.warn(WARNING.WRONG_RELATION_ARRAY_EXPECTED);
+          continue;
+        }
 
+        item.attributes[relation.localField] = [];
+        for (let i = 0, l = links.length; i < l; i++) {
+          let link:any = links[i];
           if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
-            let remoteIdAttribute = relation.relatedCollection.idAttribute;
-            let itemLinked:any = itemsIndexed[link.type][link.id];
-            itemLinked.attributes[remoteIdAttribute] = link.id;
-            item.attributes[relation.localField] = itemLinked.attributes;
+            let itemLinkd:any = itemsIndexed[link.type][link.id];
+            item.attributes[relation.localField].push(itemLinkd.attributes);
           }
-        } else if (relation.type === 'hasMany') {
-          let links:any = item.relationships[relationField].data
-          if (!utils.isArray(links)) {
-            this.warn(WARNING.WRONG_RELATION_ARRAY_EXPECTED);
-            continue;
-          }
-
-          item.attributes[relation.localField] = [];
-          for (let i = 0, l = links.length; i < l; i++) {
-            let link:any = links[i];
-            if (itemsIndexed[link.type] && itemsIndexed[link.type][link.id]) {
-              let itemLinkd:any = itemsIndexed[link.type][link.id];
-              item.attributes[relation.localField].push(itemLinkd.attributes);
-            }
-          }
-        } else { this.warn(WARNING.RELATION_UNKNOWN); continue; }
-      }
+        }
+      } else { this.warn(WARNING.RELATION_UNKNOWN); continue; }
     }
   }
 
@@ -118,7 +126,7 @@ export function jsonApiDeserialize(mapper:Mapper, res:any, opts:any){
       outputDatas.push(res.data.data[i].attributes);
     }
   }
-
+  
   if (!opts.raw) {
     return outputDatas;
   }
