@@ -2,7 +2,42 @@ import * as Resources from '../../resources'
 import { expect } from 'chai';
 import { store } from '../../ds';
 
+const rawCompanies = require('../../api/companies.json')
+
 describe('relations/manyToMany', () => {
+  describe.only( 'when resources are fetched with nested included', () => {
+    beforeEach(() => {
+      return store.findAll('Company', {
+        include: { companyUsers: {include: 'user' }}
+      })
+    })
+
+    it('should store companies, users and companyUsers', () => {
+      let companies = store.getAll('Company')
+      expect(companies).to.have.lengthOf(rawCompanies.data.length)
+      
+      let companyUser = store.getAll('CompanyUser')
+      expect(companyUser).to.have.lengthOf(
+        rawCompanies.included.filter((el: any) => {
+          return el.type === 'CompanyUser'
+        }).length
+      )
+
+      let users = store.getAll('User')
+      expect(users).to.have.lengthOf(
+        rawCompanies.included.filter((el: any) => {
+          return el.type === 'CompanyUser'
+        }).length
+      )
+    })
+
+    it('should do the correct associations', () => {
+      let companies = store.getAll('Company')
+      let users = companies[0].companyUsers.map((cu) => { return cu.user })
+      expect(users).to.have.lengthOf(3)
+    })
+  })
+
   describe('when resources are fetched with including their child of a manyToMany relation', () => {
     const
       USER_LENGTH = 1,
